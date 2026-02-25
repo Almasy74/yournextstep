@@ -1,0 +1,16 @@
+{
+  "name": "yournextstep",
+  "version": "1.0.0",
+  "description": "AI-powered decision platform — YourNextStep.ai",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js --watch",
+    "clean": "node -e \"require('fs-extra').removeSync('dist')\""
+  },
+  "keywords": ["ai", "decisions", "career", "seo"],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  }
+}
