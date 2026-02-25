@@ -85,10 +85,9 @@ function qaCheck(d) {
   if (!['Yes', 'No', 'Depends'].includes(d.verdict)) errors.push(`verdict "${d.verdict}" invalid`);
   if (!d.slug) errors.push('missing slug');
   if (!d.title) errors.push('missing title');
-  // Affiliate count guard
+  // Affiliate count guard (hard rule: max 3)
   const affiliateCount = (d.nextSteps || []).filter(ns => ns.affiliateUrl).length;
-  if (affiliateCount > 3) warnings.push(`${affiliateCount} affiliate links (max 3 recommended)`);
-  if (affiliateCount === 0) warnings.push('no affiliate links — check monetization');
+  if (affiliateCount > 3) errors.push(`${affiliateCount} affiliate links exceeds hard limit of 3`);
   return { errors, warnings };
 }
 
@@ -245,7 +244,8 @@ function footerHTML() {
       <div class="footer-col">
         <h4>Legal</h4>
         <ul role="list">
-          <li><a href="/disclaimer.html">Terms & Disclaimer</a></li>
+          <li><a href="/disclaimer.html">Terms &amp; Disclaimer</a></li>
+          <li><a href="/affiliate-disclosure/">Affiliate Disclosure</a></li>
         </ul>
       </div>
     </div>
@@ -316,6 +316,9 @@ function decisionPageHTML(d, allDecisions) {
   const weightedScore = d.scorecard.reduce((s, r) => s + (r.weight * r.score), 0);
   const maxWeightedScore = d.scorecard.reduce((s, r) => s + (r.weight * 10), 0);
   const overallPct = Math.round((weightedScore / maxWeightedScore) * 100);
+
+  // Check if page has affiliate links (for conditional disclosure)
+  const hasAffiliateLinks = (d.nextSteps || []).slice(0, 3).some(ns => ns.affiliateUrl);
 
   const breadcrumbItems = [
     { name: 'Home', url: SITE_URL + '/' },
@@ -458,11 +461,14 @@ function decisionPageHTML(d, allDecisions) {
       <!-- Next Steps -->
       <section class="decision-section" aria-label="Recommended next steps">
         <h2>Recommended Next Steps</h2>
+        ${hasAffiliateLinks ? `<div class="affiliate-disclosure" role="note" aria-label="Advertising disclosure">
+          <strong>Ad</strong> · Some links below are advertising (affiliate) links. If you use them, we may earn a commission. Our analysis is independent. <a href="/affiliate-disclosure/">Full disclosure</a>.
+        </div>` : ''}
         <div class="next-steps-list">
           ${d.nextSteps.slice(0, 3).map(ns => {
     const isPrimary = ns.isPrimary ? ' primary' : '';
     const ctaHTML = ns.affiliateUrl
-      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta" rel="sponsored nofollow" target="_blank">${esc(ns.affiliateLabel)} →</a>`
+      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta" rel="sponsored nofollow noopener noreferrer" target="_blank">${esc(ns.affiliateLabel)} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
       : '';
     return `<div class="next-step-card${isPrimary}">
               <div class="next-step-info"><h4>${ns.isPrimary ? '⭐ ' : ''}${esc(ns.action)}</h4></div>
@@ -470,7 +476,6 @@ function decisionPageHTML(d, allDecisions) {
             </div>`;
   }).join('')}
         </div>
-        <p class="affiliate-disclosure">Some links are affiliate links. We may earn a commission at no extra cost to you. We only recommend resources we'd use ourselves. <a href="/disclaimer.html">Full disclosure</a>.</p>
       </section>
 
       <!-- FAQ -->
@@ -804,6 +809,38 @@ function disclaimerPageHTML() {
   });
 }
 
+
+function affiliateDisclosurePageHTML() {
+  return shell({
+    title: 'Affiliate Disclosure',
+    description: 'How affiliate links work on YourNextStep.ai, our independence policy, and transparency commitment.',
+    canonical: SITE_URL + '/affiliate-disclosure/',
+    bodyClass: 'page-affiliate-disclosure',
+    content: `<div class="container"><section class="section">
+      <h1>Affiliate Disclosure</h1>
+
+      <h2>How Affiliate Links Work</h2>
+      <p>Some pages on YourNextStep.ai contain advertising (affiliate) links to courses, tools, and services. If you click one of these links and make a purchase, we may receive a commission from the provider at no additional cost to you.</p>
+      <p>Affiliate links are always clearly labeled with an <strong>"Ad"</strong> tag and only appear in the "Recommended Next Steps" section &mdash; never inside our analysis, verdict, or FAQ sections.</p>
+
+      <h2 style="margin-top:var(--space-8);">Our Independence</h2>
+      <p>Affiliate partnerships do not influence our editorial content in any way. Our verdicts, confidence scores, and decision scorecards are generated using the YNS Decision Framework &mdash; an objective, weighted analysis of multiple factors. We do not adjust scores to favor products or services that pay us commissions.</p>
+      <p>Pages with and without affiliate links use exactly the same analysis methodology and quality standards.</p>
+
+      <h2 style="margin-top:var(--space-8);">How We Select Recommendations</h2>
+      <p>Recommended tools and services are selected based on relevance to the decision topic, user reviews, market reputation, and editorial judgement. We only recommend services we believe provide genuine value. Having an affiliate program is not a requirement for recommendation &mdash; many of our "next steps" do not include affiliate links.</p>
+
+      <h2 style="margin-top:var(--space-8);">No Guarantees</h2>
+      <p>We make no guarantees about any recommended product or service. Results depend on your individual circumstances. Always do your own research before making purchasing decisions.</p>
+
+      <h2 style="margin-top:var(--space-8);">Transparency</h2>
+      <p>We are committed to full transparency about our commercial relationships. If you have questions about our affiliate practices, contact us at <a href="mailto:hello@yournextstep.ai">hello@yournextstep.ai</a>.</p>
+
+      <p style="margin-top:var(--space-8); color:var(--text-muted); font-size:var(--fs-sm);">This disclosure complies with applicable Norwegian marketing law (markedsf&oslash;ringsloven) and EU consumer protection directives. Last updated: ${new Date().toISOString().slice(0, 10)}.</p>
+    </section></div>`
+  });
+}
+
 function page404HTML() {
   return shell({
     title: '404 — Page Not Found',
@@ -902,7 +939,8 @@ async function build() {
     { url: SITE_URL + '/about.html', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/how-scoring-works.html', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/sources-update-policy.html', lastmod: new Date().toISOString().slice(0, 10) },
-    { url: SITE_URL + '/disclaimer.html', lastmod: new Date().toISOString().slice(0, 10) }
+    { url: SITE_URL + '/disclaimer.html', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/affiliate-disclosure/', lastmod: new Date().toISOString().slice(0, 10) }
   ];
 
   for (const [catSlug, catMeta] of Object.entries(CATEGORIES)) {
@@ -934,6 +972,12 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'sources-update-policy.html'), sourcesPageHTML());
   await fs.writeFile(path.join(DIST, 'disclaimer.html'), disclaimerPageHTML());
   await fs.writeFile(path.join(DIST, '404.html'), page404HTML());
+
+  // Affiliate disclosure page
+  const affDir = path.join(DIST, 'affiliate-disclosure');
+  await fs.ensureDir(affDir);
+  await fs.writeFile(path.join(affDir, 'index.html'), affiliateDisclosurePageHTML());
+  console.log('  📄 affiliate-disclosure/index.html');
   console.log('  📄 about.html, how-scoring-works.html, sources-update-policy.html, disclaimer.html, 404.html');
 
   // Sitemap
