@@ -364,6 +364,26 @@ function decisionPageHTML(d, allDecisions) {
         </div>
       </section>
 
+      <!-- Audio Briefing -->
+      <section class="decision-section" aria-label="Audio briefing">
+        <div class="audio-player">
+          <h3>🎧 3-Minute Audio Briefing</h3>
+          <p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary' : 'Audio coming soon — read the transcript below'}</p>
+          ${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio>
+          <div class="audio-controls">
+            <button class="btn-play" aria-label="Play audio briefing">▶</button>
+            <div class="audio-progress">
+              <div class="progress-bar"><div class="progress-fill"></div></div>
+              <div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div>
+            </div>
+          </div>` : ''}
+          <button class="audio-script-toggle" aria-expanded="false">Read transcript ▼</button>
+          <div class="audio-script" role="region" aria-label="Audio transcript">
+            <p>${esc(d.audio.script)}</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Who Should / Shouldn't -->
       <section class="decision-section" aria-label="Who this is for">
         <h2>Who Is This For?</h2>
@@ -464,25 +484,7 @@ function decisionPageHTML(d, allDecisions) {
         </div>
       </section>
 
-      <!-- Audio Briefing -->
-      <section class="decision-section" aria-label="Audio briefing">
-        <div class="audio-player">
-          <h3>🎧 3-Minute Audio Briefing</h3>
-          <p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary' : 'Audio coming soon — read the transcript below'}</p>
-          ${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio>
-          <div class="audio-controls">
-            <button class="btn-play" aria-label="Play audio briefing">▶</button>
-            <div class="audio-progress">
-              <div class="progress-bar"><div class="progress-fill"></div></div>
-              <div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div>
-            </div>
-          </div>` : ''}
-          <button class="audio-script-toggle" aria-expanded="false">Read transcript ▼</button>
-          <div class="audio-script" role="region" aria-label="Audio transcript">
-            <p>${esc(d.audio.script)}</p>
-          </div>
-        </div>
-      </section>
+
 
       <!-- Template Variant Section (breaks pattern) -->
       ${templateVariantHTML(d)}
