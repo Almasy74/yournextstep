@@ -172,6 +172,7 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <title>${esc(title)} — YourNextStep.ai</title>
   <meta name="description" content="${esc(description)}">
   ${robotsMeta}
@@ -871,7 +872,7 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
 
   // Copy static assets
-  for (const f of ['style.css', 'script.js']) {
+  for (const f of ['style.css', 'script.js', 'favicon.svg']) {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 
