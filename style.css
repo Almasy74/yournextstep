@@ -1144,7 +1144,7 @@ a:hover {
 
 .audio-script-toggle {
   font-size: var(--fs-sm);
-  color: var(--accent-blue);
+  color: var(--accent-blue-hover);
   background: none;
   border: none;
   cursor: pointer;
