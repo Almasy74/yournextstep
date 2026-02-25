@@ -872,7 +872,7 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
 
   // Copy static assets
-  for (const f of ['style.css', 'script.js', 'favicon.svg']) {
+  for (const f of ['style.css', 'script.js', 'favicon.svg', 'google1a314224e4d44867.html']) {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 
