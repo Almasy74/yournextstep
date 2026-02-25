@@ -654,6 +654,49 @@ a:hover {
   background: var(--verdict-depends);
 }
 
+/* --- Verdict Banner Responsive --- */
+@media (max-width: 640px) {
+  .verdict-banner {
+    padding: var(--space-6) var(--space-4);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+  }
+
+  .verdict-text {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .verdict-subtitle strong {
+    font-size: 1.1em !important;
+  }
+
+  .verdict-meta {
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-4);
+    font-size: var(--fs-xs);
+  }
+
+  .confidence-bar {
+    width: 120px;
+  }
+}
+
+@media (max-width: 380px) {
+  .verdict-text {
+    font-size: 1.25rem;
+  }
+
+  .verdict-meta {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .confidence-bar {
+    width: 100px;
+  }
+}
+
 /* --- Decision Section --- */
 .decision-section {
   margin-bottom: var(--space-12);
