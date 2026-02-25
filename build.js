@@ -876,6 +876,12 @@ async function build() {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 
+  // Copy audio assets
+  const audioSrc = path.join(SRC, 'audio');
+  if (await fs.pathExists(audioSrc)) {
+    await fs.copy(audioSrc, path.join(DIST, 'audio'));
+  }
+
   // Generate homepage
   await fs.writeFile(path.join(DIST, 'index.html'), homepageHTML(publishable));
   console.log('  📄 index.html');
