@@ -17,7 +17,7 @@
 
   --text-primary: #f0f2f8;
   --text-secondary: #9ba3bf;
-  --text-muted: #6b7294;
+  --text-muted: #8b96ba;
 
   --accent-blue: #3b82f6;
   --accent-blue-hover: #60a5fa;
@@ -27,7 +27,7 @@
   --accent-red: #ef4444;
 
   --gradient-hero: linear-gradient(135deg, #1e1b4b 0%, #0a0e1a 50%, #0f172a 100%);
-  --gradient-accent: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  --gradient-accent: linear-gradient(135deg, #2563eb, #7c3aed);
   --gradient-card: linear-gradient(145deg, #1a1f35 0%, #151a2e 100%);
 
   --verdict-yes: #10b981;
