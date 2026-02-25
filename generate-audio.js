@@ -61,10 +61,12 @@ async function main() {
 
     const decisions = JSON.parse(await fs.readFile('data/decisions.json', 'utf8'));
 
-    // Find articles needing audio (durationSec === 0 means not yet generated)
-    const needsAudio = decisions.filter(d =>
-        d.audio && d.audio.script && d.audio.durationSec === 0
-    );
+    // Find articles needing audio (no MP3 file on disk)
+    const needsAudio = decisions.filter(d => {
+        if (!d.audio || !d.audio.script) return false;
+        const mp3Path = path.join(AUDIO_DIR, `${d.slug}.mp3`);
+        return !fs.existsSync(mp3Path);
+    });
 
     if (needsAudio.length === 0) {
         console.log('✅ All articles already have audio.');
