@@ -198,9 +198,16 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
 
 function navHTML() {
   return `<header class="site-header">
-    <div class="container">
-      <a href="/" class="logo" aria-label="YourNextStep.ai home">YourNextStep<span>.ai</span></a>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">☰</button>
+    <div class="container site-header-inner">
+      <div class="site-header-left">
+        <a href="/" class="logo" aria-label="YourNextStep.ai home">YourNextStep<span>.ai</span></a>
+      </div>
+      
+      <div class="nav-actions">
+        <button class="search-toggle" aria-label="Open search" aria-expanded="false" aria-controls="search-bar">🔍</button>
+        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">☰</button>
+      </div>
+
       <nav id="main-nav">
         <ul class="nav-links" role="list">
           <li><a href="/career-decisions/">Career</a></li>
@@ -211,6 +218,21 @@ function navHTML() {
           <li><a href="/about.html">About</a></li>
         </ul>
       </nav>
+    </div>
+
+    <!-- Expanded Search Bar -->
+    <div id="search-bar" class="search-bar-expanded hide" role="search">
+      <div class="container">
+        <div class="search-expanded-inner">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inline">🔍</span>
+            <input type="text" id="search-input" placeholder="Search categories and decisions..." aria-label="Search across all categories" autocomplete="off">
+            <button id="search-clear" class="hide" aria-label="Clear search">✕</button>
+          </div>
+          <button class="search-close" aria-label="Close search">Close</button>
+        </div>
+        <div id="search-results" class="search-results hide" role="listbox"></div>
+      </div>
     </div>
   </header>`;
 }

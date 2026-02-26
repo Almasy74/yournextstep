@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initAudioPlayer();
   initAudioScriptToggle();
+  initSearch();
 });
 
 /* --- Mobile Navigation --- */
@@ -131,5 +132,172 @@ function initAudioScriptToggle() {
     const visible = script.classList.toggle('visible');
     btn.textContent = visible ? 'Hide transcript ▲' : 'Read transcript ▼';
     btn.setAttribute('aria-expanded', String(visible));
+  });
+}
+
+/* --- Search Functionality --- */
+function initSearch() {
+  const searchToggle = document.querySelector('.search-toggle');
+  const searchBar = document.getElementById('search-bar');
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+  const searchClear = document.getElementById('search-clear');
+  const searchClose = document.querySelector('.search-close');
+
+  if (!searchToggle || !searchBar || !searchInput || !searchResults) return;
+
+  let searchIndex = null;
+  let selectedIndex = -1;
+
+  async function loadSearchIndex() {
+    if (searchIndex) return;
+    try {
+      const resp = await fetch('/search-index.json');
+      searchIndex = await resp.json();
+    } catch (err) {
+      console.error('Failed to load search index', err);
+    }
+  }
+
+  function toggleSearchBar(force) {
+    const isClosing = force === false || !searchBar.classList.contains('hide');
+    searchBar.classList.toggle('hide', force === false);
+    searchToggle.setAttribute('aria-expanded', !isClosing);
+
+    if (!isClosing) {
+      loadSearchIndex();
+      setTimeout(() => searchInput.focus(), 100);
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+      document.body.style.overflow = '';
+      if (force === false) {
+        searchInput.value = '';
+        searchResults.classList.add('hide');
+        searchClear.classList.add('hide');
+      }
+      selectedIndex = -1;
+    }
+  }
+
+  searchToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSearchBar();
+  });
+
+  if (searchClose) {
+    searchClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSearchBar(false);
+    });
+  }
+
+  function renderResults(query) {
+    if (!searchIndex) return;
+
+    const results = searchIndex.filter(item =>
+      item.title.toLowerCase().includes(query.toLowerCase()) ||
+      item.description.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 15);
+
+    if (results.length === 0) {
+      searchResults.innerHTML = `<div class="search-no-results">No results for "${query}"</div>`;
+      searchResults.classList.remove('hide');
+      selectedIndex = -1;
+      return;
+    }
+
+    // Grouping
+    const groups = {};
+    results.forEach(item => {
+      if (!groups[item.category]) groups[item.category] = [];
+      groups[item.category].push(item);
+    });
+
+    const categoryNames = {
+      'career-decisions': 'Career Decisions',
+      'ai-and-jobs': 'AI & Jobs',
+      'learning': 'Learning',
+      'money-decisions': 'Money Decisions',
+      'side-hustles': 'Side Hustles'
+    };
+
+    let html = '';
+    Object.keys(groups).forEach(cat => {
+      html += `<div class="search-group-title">${categoryNames[cat] || cat}</div>`;
+      groups[cat].forEach(item => {
+        html += `
+          <a href="/${item.slug}/" class="search-item" data-slug="${item.slug}">
+            <span class="search-item-title">${item.title}</span>
+            <span class="search-item-desc">${item.description}</span>
+          </a>`;
+      });
+    });
+
+    searchResults.innerHTML = html;
+    searchResults.classList.remove('hide');
+    selectedIndex = -1;
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    if (query.length < 2) {
+      searchResults.classList.add('hide');
+      searchClear.classList.add('hide');
+      return;
+    }
+    searchClear.classList.remove('hide');
+    renderResults(query);
+  });
+
+  searchClear.addEventListener('click', (e) => {
+    e.stopPropagation();
+    searchInput.value = '';
+    searchResults.classList.add('hide');
+    searchClear.classList.add('hide');
+    searchInput.focus();
+  });
+
+  // Keyboard navigation
+  searchInput.addEventListener('keydown', (e) => {
+    const items = searchResults.querySelectorAll('.search-item');
+
+    if (e.key === 'Escape') {
+      toggleSearchBar(false);
+      return;
+    }
+
+    if (searchResults.classList.contains('hide') || items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex + 1) % items.length;
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+      updateSelection(items);
+    } else if (e.key === 'Enter') {
+      if (selectedIndex >= 0) {
+        e.preventDefault();
+        items[selectedIndex].click();
+      }
+    }
+  });
+
+  function updateSelection(items) {
+    items.forEach((item, idx) => {
+      item.classList.toggle('selected', idx === selectedIndex);
+      if (idx === selectedIndex) {
+        item.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  }
+
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (searchBar.classList.contains('hide')) return;
+    if (!searchBar.contains(e.target) && !searchToggle.contains(e.target)) {
+      toggleSearchBar(false);
+    }
   });
 }
