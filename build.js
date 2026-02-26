@@ -533,8 +533,16 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
     { name: cat.title, url: `${SITE_URL}/${catSlug}/` }
   ];
 
+  // Count verdict distribution for hero stats
+  const yesCount = decisions.filter(d => d.verdict === 'Yes').length;
+  const noCount = decisions.filter(d => d.verdict === 'No').length;
+  const dependsCount = decisions.filter(d => d.verdict === 'Depends').length;
+  const avgConfidence = decisions.length > 0
+    ? Math.round(decisions.reduce((s, d) => s + d.confidence, 0) / decisions.length)
+    : 0;
+
   const paginationHTML = totalPages > 1 ? `<nav class="pagination" aria-label="Category pages">
-    ${page > 1 ? `<a href="/${catSlug}/${page === 2 ? '' : 'page/' + (page - 1) + '/'}" rel="prev">← Prev</a>` : ''}
+    ${page > 1 ? `<a href="/${catSlug}/${page === 2 ? '' : 'page/' + (page - 1) + '/'}\" rel="prev">← Prev</a>` : ''}
     ${Array.from({ length: totalPages }, (_, i) => i + 1).map(p => {
     const href = p === 1 ? `/${catSlug}/` : `/${catSlug}/page/${p}/`;
     return p === page ? `<span class="current">${p}</span>` : `<a href="${href}">${p}</a>`;
@@ -547,23 +555,62 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
 
   const content = `
     <section class="category-hero">
+      <div class="category-hero-bg" aria-hidden="true"></div>
       <div class="container">
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <a href="/">Home</a> <span class="separator">›</span>
           <span aria-current="page">${esc(cat.title)}</span>
         </nav>
-        <div style="font-size:3rem; margin-bottom:var(--space-4);">${cat.icon}</div>
+        <div class="category-hero-icon">${cat.icon}</div>
         <h1>${esc(cat.title)}</h1>
-        <p>${esc(cat.description)}</p>
+        <p class="category-hero-desc">${esc(cat.description)}</p>
+        <div class="category-stats">
+          <div class="category-stat">
+            <span class="category-stat-value">${decisions.length}</span>
+            <span class="category-stat-label">Decision Guides</span>
+          </div>
+          <div class="category-stat">
+            <span class="category-stat-value" style="color:var(--verdict-yes)">${yesCount}</span>
+            <span class="category-stat-label">Verdict: Yes</span>
+          </div>
+          <div class="category-stat">
+            <span class="category-stat-value" style="color:var(--verdict-depends)">${dependsCount}</span>
+            <span class="category-stat-label">Verdict: Depends</span>
+          </div>
+          <div class="category-stat">
+            <span class="category-stat-value" style="color:var(--verdict-no)">${noCount}</span>
+            <span class="category-stat-label">Verdict: No</span>
+          </div>
+          <div class="category-stat">
+            <span class="category-stat-value">${avgConfidence}%</span>
+            <span class="category-stat-label">Avg. Confidence</span>
+          </div>
+        </div>
       </div>
     </section>
     <section class="section">
-      <div class="container">
-        <div class="decision-list">
-          ${decisions.map(d => `<a href="/${d.slug}/" class="decision-link">
-            <h3>${esc(d.title)}</h3>
-            <span class="verdict-tag ${verdictTagClass(d.verdict)}">${d.verdict} · ${d.confidence}%</span>
-          </a>`).join('')}
+      <div class="container container--wide">
+        <div class="decision-card-grid">
+          ${decisions.map(d => {
+    const cat = CATEGORIES[d.category] || { icon: '📄' };
+    const shortDesc = d.metaDescription ? (d.metaDescription.length > 115 ? d.metaDescription.substring(0, 112) + '…' : d.metaDescription) : '';
+    const vTag = verdictTagClass(d.verdict);
+    const vColor = d.verdict === 'Yes' ? 'var(--verdict-yes)' : d.verdict === 'No' ? 'var(--verdict-no)' : 'var(--verdict-depends)';
+    return `<a href="/${d.slug}/" class="decision-card">
+              <div class="decision-card-top">
+                <span class="decision-card-verdict ${vTag}">${d.verdict}</span>
+                <span class="decision-card-confidence">${d.confidence}% confidence</span>
+              </div>
+              <h3 class="decision-card-title">${esc(d.title)}</h3>
+              <p class="decision-card-desc">${esc(shortDesc)}</p>
+              <div class="decision-card-footer">
+                <div class="decision-card-meter" role="meter" aria-valuenow="${d.confidence}" aria-valuemin="0" aria-valuemax="100" aria-label="Confidence ${d.confidence}%">
+                  <div class="decision-card-meter-fill" style="width:${d.confidence}%; background:${vColor}"></div>
+                </div>
+                <span class="decision-card-meta">${d.readingTime || 7} min read</span>
+              </div>
+            </a>`;
+  }).join('')}
         </div>
         ${paginationHTML}
       </div>
