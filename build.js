@@ -13,12 +13,35 @@ const DATA = path.join(SRC, 'data', 'decisions.json');
 const SITE_URL = 'https://yournextstep.ai';
 const ITEMS_PER_PAGE = 30;
 
+const ICONS = {
+  compass: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+  cpu: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>`,
+  book: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  banknote: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>`,
+  rocket: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-3 5-3"/><path d="M12 15v5c2.2 1.62 3 5 3 5 .19-1.53 2.14-3.51 5-5"/></svg>`,
+  search: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
+  menu: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>`,
+  x: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+  check: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><polyline points="20 6 9 17 4 12"/></svg>`,
+  circleX: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+  alertTriangle: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`,
+  play: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+  pause: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><rect width="4" height="16" x="6" y="4" rx="1"/><rect width="4" height="16" x="14" y="4" rx="1"/></svg>`,
+  brain: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.97-3.06 2.5 2.5 0 0 1-2.51-4.58 2.5 2.5 0 0 1 .53-3.64 2.5 2.5 0 0 1 3.17-2.78A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.97-3.06 2.5 2.5 0 0 0 2.51-4.58 2.5 2.5 0 0 0-.53-3.64 2.5 2.5 0 0 0-3.17-2.78A2.5 2.5 0 0 0 14.5 2Z"/></svg>`,
+  thumbsUp: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>`,
+  thumbsDown: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"/></svg>`,
+  headphones: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`,
+  trendingUp: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+  fileText: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14.5 2 14.5 7.5 20 7.5"/><line x1="10" x2="14" y1="13" y2="13"/><line x1="10" x2="14" y1="17" y2="17"/><line x1="8" x2="8" y1="9" y2="9"/></svg>`,
+  star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+};
+
 const CATEGORIES = {
-  'career-decisions': { title: 'Career Decisions', icon: '🧭', description: 'Navigate job changes, promotions, and career pivots with structured analysis.' },
-  'ai-and-jobs': { title: 'AI & Jobs', icon: '🤖', description: 'Understand how AI is reshaping your industry and what moves to make.' },
-  'learning': { title: 'Learning', icon: '📚', description: 'Decide which skills, courses, and credentials are actually worth your time.' },
-  'money-decisions': { title: 'Money Decisions', icon: '💰', description: 'Evaluate financial choices with frameworks, not feelings.' },
-  'side-hustles': { title: 'Side Hustles', icon: '🚀', description: 'Assess side income opportunities with realistic timelines and tradeoffs.' }
+  'career-decisions': { title: 'Career Decisions', icon: 'compass', description: 'Navigate job changes, promotions, and career pivots with structured analysis.' },
+  'ai-and-jobs': { title: 'AI & Jobs', icon: 'cpu', description: 'Understand how AI is reshaping your industry and what moves to make.' },
+  'learning': { title: 'Learning', icon: 'book', description: 'Decide which skills, courses, and credentials are actually worth your time.' },
+  'money-decisions': { title: 'Money Decisions', icon: 'banknote', description: 'Evaluate financial choices with frameworks, not feelings.' },
+  'side-hustles': { title: 'Side Hustles', icon: 'rocket', description: 'Assess side income opportunities with realistic timelines and tradeoffs.' }
 };
 
 // ─── Schema Normalization ───────────────────────────────────
@@ -204,8 +227,8 @@ function navHTML() {
       </div>
       
       <div class="nav-actions">
-        <button class="search-toggle" aria-label="Open search" aria-expanded="false" aria-controls="search-bar">🔍</button>
-        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">☰</button>
+        <button class="search-toggle" aria-label="Open search" aria-expanded="false" aria-controls="search-bar">${ICONS.search}</button>
+        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">${ICONS.menu}</button>
       </div>
 
       <nav id="main-nav">
@@ -225,9 +248,9 @@ function navHTML() {
       <div class="container">
         <div class="search-expanded-inner">
           <div class="search-input-wrapper">
-            <span class="search-icon-inline">🔍</span>
+            <span class="search-icon-inline">${ICONS.search}</span>
             <input type="text" id="search-input" placeholder="Search categories and decisions..." aria-label="Search across all categories" autocomplete="off">
-            <button id="search-clear" class="hide" aria-label="Clear search">✕</button>
+            <button id="search-clear" class="hide" aria-label="Clear search">${ICONS.x}</button>
           </div>
           <button class="search-close" aria-label="Close search">Close</button>
         </div>
@@ -324,7 +347,7 @@ function templateVariantHTML(d) {
 
 // ─── Decision Page Template ─────────────────────────────────
 function decisionPageHTML(d, allDecisions) {
-  const catMeta = CATEGORIES[d.category] || { title: d.category, icon: '📄' };
+  const catMeta = CATEGORIES[d.category] || { title: d.category, icon: 'fileText' };
   const vClass = verdictClass(d.verdict);
   const isYMYL = d.category === 'money-decisions';
 
@@ -392,11 +415,11 @@ function decisionPageHTML(d, allDecisions) {
       <!-- Audio Briefing -->
       <section class="decision-section" aria-label="Audio briefing">
         <div class="audio-player">
-          <h3>🎧 3-Minute Audio Briefing</h3>
+          <h3>${ICONS.headphones} 3-Minute Audio Briefing</h3>
           <p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary' : 'Audio coming soon — read the transcript below'}</p>
           ${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio>
           <div class="audio-controls">
-            <button class="btn-play" aria-label="Play audio briefing">▶</button>
+            <button class="btn-play" aria-label="Play audio briefing">${ICONS.play}</button>
             <div class="audio-progress">
               <div class="progress-bar"><div class="progress-fill"></div></div>
               <div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div>
@@ -414,11 +437,11 @@ function decisionPageHTML(d, allDecisions) {
         <h2>Who Is This For?</h2>
         <div class="who-grid">
           <div class="who-card who-should">
-            <h3>✅ You should if…</h3>
+            <h3>${ICONS.check} You should if…</h3>
             <ul role="list">${d.whoShould.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
           </div>
           <div class="who-card who-shouldnt">
-            <h3>🚫 You should NOT if…</h3>
+            <h3>${ICONS.circleX} You should NOT if…</h3>
             <ul role="list">${d.whoShouldNot.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
           </div>
         </div>
@@ -454,11 +477,11 @@ function decisionPageHTML(d, allDecisions) {
         <h2>Pros & Cons</h2>
         <div class="proscons-grid">
           <div class="proscons-column">
-            <h3>👍 Pros</h3>
+            <h3>${ICONS.thumbsUp} Pros</h3>
             ${d.pros.map(p => `<div class="proscons-item"><h4>${esc(p.title)}</h4><p>${esc(p.detail)}</p></div>`).join('')}
           </div>
           <div class="proscons-column">
-            <h3>👎 Cons</h3>
+            <h3>${ICONS.thumbsDown} Cons</h3>
             ${d.cons.map(c => `<div class="proscons-item"><h4>${esc(c.title)}</h4><p>${esc(c.detail)}</p></div>`).join('')}
           </div>
         </div>
@@ -468,7 +491,7 @@ function decisionPageHTML(d, allDecisions) {
       <section class="decision-section" aria-label="Risks people underestimate">
         <h2>Risks People Underestimate</h2>
         <div class="risk-list">
-          ${d.risksUnderestimated.map(r => `<div class="risk-card"><span class="risk-icon" aria-hidden="true">⚠</span><p>${esc(r)}</p></div>`).join('')}
+          ${d.risksUnderestimated.map(r => `<div class="risk-card"><span class="risk-icon" aria-hidden="true">${ICONS.alertTriangle}</span><p>${esc(r)}</p></div>`).join('')}
         </div>
       </section>
 
@@ -493,7 +516,7 @@ function decisionPageHTML(d, allDecisions) {
       ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta" rel="sponsored nofollow noopener noreferrer" target="_blank">${esc(ns.affiliateLabel)} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
       : '';
     return `<div class="next-step-card${isPrimary}">
-              <div class="next-step-info"><h4>${ns.isPrimary ? '⭐ ' : ''}${esc(ns.action)}</h4></div>
+              <div class="next-step-info"><h4>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h4></div>
               ${ctaHTML}
             </div>`;
   }).join('')}
@@ -564,12 +587,12 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
     : 0;
 
   const paginationHTML = totalPages > 1 ? `<nav class="pagination" aria-label="Category pages">
-    ${page > 1 ? `<a href="/${catSlug}/${page === 2 ? '' : 'page/' + (page - 1) + '/'}\" rel="prev">← Prev</a>` : ''}
+    ${page > 1 ? `<a href="/${catSlug}/${page === 2 ? '' : 'page/' + (page - 1) + '/'}\" rel="prev">Prev</a>` : ''}
     ${Array.from({ length: totalPages }, (_, i) => i + 1).map(p => {
     const href = p === 1 ? `/${catSlug}/` : `/${catSlug}/page/${p}/`;
     return p === page ? `<span class="current">${p}</span>` : `<a href="${href}">${p}</a>`;
   }).join('')}
-    ${page < totalPages ? `<a href="/${catSlug}/page/${page + 1}/" rel="next">Next →</a>` : ''}
+    ${page < totalPages ? `<a href="/${catSlug}/page/${page + 1}/" rel="next">Next</a>` : ''}
   </nav>` : '';
 
   const prevLink = page > 1 ? `<link rel="prev" href="${SITE_URL}/${catSlug}/${page === 2 ? '' : 'page/' + (page - 1) + '/'}">` : '';
@@ -583,7 +606,7 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
           <a href="/">Home</a> <span class="separator">›</span>
           <span aria-current="page">${esc(cat.title)}</span>
         </nav>
-        <div class="category-hero-icon">${cat.icon}</div>
+        <div class="category-hero-icon">${ICONS[cat.icon]}</div>
         <h1>${esc(cat.title)}</h1>
         <p class="category-hero-desc">${esc(cat.description)}</p>
         <div class="category-stats">
@@ -614,7 +637,7 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
       <div class="container container--wide">
         <div class="decision-card-grid">
           ${decisions.map(d => {
-    const cat = CATEGORIES[d.category] || { icon: '📄' };
+    const cat = CATEGORIES[d.category] || { icon: 'fileText' };
     const shortDesc = d.metaDescription ? (d.metaDescription.length > 115 ? d.metaDescription.substring(0, 112) + '…' : d.metaDescription) : '';
     const vTag = verdictTagClass(d.verdict);
     const vColor = d.verdict === 'Yes' ? 'var(--verdict-yes)' : d.verdict === 'No' ? 'var(--verdict-no)' : 'var(--verdict-depends)';
@@ -661,7 +684,7 @@ function homepageHTML(allDecisions) {
   const content = `
     <section class="hero">
       <div class="hero-content container">
-        <span class="hero-badge">🧠 AI Decision Intelligence</span>
+        <span class="hero-badge">${ICONS.brain} AI Decision Intelligence</span>
         <h1>Should I <span class="gradient-text">_____</span> ?<br>Get a real answer.</h1>
         <p class="hero-subtitle">Structured AI analysis for career, learning, and financial decisions. No fluff — just data-driven verdicts, weighted scorecards, and actionable next steps.</p>
         <a href="#categories" class="hero-cta">Explore Decisions ↓</a>
@@ -700,7 +723,7 @@ function homepageHTML(allDecisions) {
         <div class="card-grid">
           ${Object.entries(CATEGORIES).map(([slug, cat]) => `
             <a href="/${slug}/" class="card">
-              <div class="card-icon">${cat.icon}</div>
+              <div class="card-icon">${ICONS[cat.icon]}</div>
               <h3>${esc(cat.title)}</h3>
               <p>${esc(cat.description)}</p>
               <span class="card-count">${categoryCounts[slug] || 0} decision guides</span>
@@ -716,19 +739,19 @@ function homepageHTML(allDecisions) {
           <p style="color:var(--text-secondary); max-width:500px; margin:var(--space-4) auto 0;">Every page uses a weighted scoring framework, cites its sources, and clearly states assumptions. <a href="/how-scoring-works.html">See how scoring works</a>.</p>
           <div class="trust-features">
             <div class="trust-feature">
-              <span class="trust-feature-icon">📊</span>
+              <span class="trust-feature-icon">${ICONS.trendingUp}</span>
               <span>Weighted Scorecards</span>
             </div>
             <div class="trust-feature">
-              <span class="trust-feature-icon">📖</span>
+              <span class="trust-feature-icon">${ICONS.fileText}</span>
               <span>Cited Sources</span>
             </div>
             <div class="trust-feature">
-              <span class="trust-feature-icon">🎧</span>
+              <span class="trust-feature-icon">${ICONS.headphones}</span>
               <span>Audio Briefings</span>
             </div>
             <div class="trust-feature">
-              <span class="trust-feature-icon">⚖️</span>
+              <span class="trust-feature-icon">${ICONS.thumbsUp}</span>
               <span>Pro/Con Analysis</span>
             </div>
           </div>
@@ -746,7 +769,7 @@ function homepageHTML(allDecisions) {
           ${recentDecisions.map(d => {
     const cat = CATEGORIES[d.category];
     return `<a href="/${d.slug}/" class="card">
-              <div class="card-icon">${cat ? cat.icon : '📄'}</div>
+              <div class="card-icon">${cat ? ICONS[cat.icon] : ICONS.fileText}</div>
               <h3>${esc(d.title)}</h3>
               <p style="margin-bottom:var(--space-3);">${esc(d.metaDescription.substring(0, 120))}…</p>
               <span class="verdict-tag ${verdictTagClass(d.verdict)}">${d.verdict} · ${d.confidence}%</span>

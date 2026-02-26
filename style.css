@@ -169,6 +169,78 @@ a:hover {
   top: var(--space-4);
 }
 
+/* --- Icons & Accents --- */
+.site-icon {
+  width: 1.2em;
+  height: 1.2em;
+  stroke: currentColor;
+  stroke-width: 2.2px;
+  /* Slightly thicker for premium feel */
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.hero-badge .site-icon {
+  margin-right: var(--space-2);
+  color: var(--accent-blue);
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.card-icon .site-icon,
+.category-hero-icon .site-icon {
+  width: 48px;
+  height: 48px;
+  stroke-width: 1.5px;
+  /* Thinner for large icons */
+  color: var(--accent-blue);
+}
+
+.trust-feature-icon .site-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--accent-blue);
+  margin-bottom: var(--space-3);
+  opacity: 0.9;
+}
+
+.benefit-card h3 .site-icon,
+.who-card h3 .site-icon,
+.audio-player h3 .site-icon {
+  margin-right: var(--space-3);
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.risk-icon .site-icon {
+  width: 20px;
+  height: 20px;
+  color: #fbbf24;
+  /* Alert yellow */
+}
+
+.next-step-info h4 .site-icon {
+  width: 1em;
+  height: 1em;
+  margin-right: var(--space-2);
+  color: #fbbf24;
+}
+
+.search-toggle .site-icon,
+.search-icon-inline .site-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5px;
+}
+
+.btn-play .site-icon {
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  /* Visual centering for play triangle */
+}
+
 /* --- Layout --- */
 .container {
   width: 100%;
