@@ -532,6 +532,12 @@
     ],
     "nextSteps": [
       {
+        "action": "Set up a simple landing page to validate demand before building anything. Start with Carrd - the fastest way to launch a test page in under an hour.",
+        "affiliateUrl": "https://try.carrd.co/kw14vb49",
+        "affiliateLabel": "Validate with Carrd ->",
+        "isPrimary": true
+      },
+      {
         "action": "Audit your employment contract for non-compete, moonlighting, and IP clauses before starting anything.",
         "affiliateUrl": "",
         "affiliateLabel": "",
@@ -542,12 +548,6 @@
         "affiliateUrl": "",
         "affiliateLabel": "",
         "isPrimary": false
-      },
-      {
-        "action": "Set up a simple landing page to validate demand before building anything. Start with Carrd - the fastest way to launch a test page in under an hour.",
-        "affiliateUrl": "https://try.carrd.co/kw14vb49",
-        "affiliateLabel": "Validate with Carrd ->",
-        "isPrimary": true
       }
     ],
     "faq": [
