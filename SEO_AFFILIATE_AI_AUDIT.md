@@ -33,6 +33,8 @@
 ## Funn Med Evidens
 - Metadata manglet Twitter/utvidet OG-felt:
   - Lagt til i [`build.js:239`](/c:/yournextstep/build.js:239), [`build.js:263`](/c:/yournextstep/build.js:263).
+- OG-image format-risiko (kun SVG):
+  - Løst med PNG-default (`og-default.png`) + eksplisitt `og:image:type/width/height`.
 - Manglet global entity-schema for siterbarhet i AI-svar:
   - Lagt til `Organization` + `WebSite` i [`build.js:215`](/c:/yournextstep/build.js:215), [`build.js:226`](/c:/yournextstep/build.js:226).
 - Article-schema forbedret for klarere entities:
@@ -41,6 +43,7 @@
   - Slot/merchant/item/page data lagt på CTA i [`build.js:580`](/c:/yournextstep/build.js:580).
 - Affiliate-CTR instrumentering manglet:
   - `affiliate_click` event lagt til i [`script.js:330`](/c:/yournextstep/script.js:330).
+  - Deduplisering + consent guard lagt til for lavere måle-/compliance-risiko.
 - Canonical host redirect manglet i Netlify-konfig:
   - `www -> apex` 301 i [`netlify.toml:5`](/c:/yournextstep/netlify.toml:5).
 - Cache hints for statiske assets manglet:
@@ -86,6 +89,7 @@
 
 ## Affiliate-CTR Anbefalinger (plasseringer/komponenter)
 - Standardiserte slots nå tilgjengelig i tracking: `top-of-content`, `mid`, `footer` via [`build.js:161`](/c:/yournextstep/build.js:161).
+- Slot taxonomy (kontrollert sett i denne implementasjonen): `top-of-content`, `mid`, `footer`.
 - Mål CTR per:
   - `page_path`
   - `slot`

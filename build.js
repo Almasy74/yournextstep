@@ -12,7 +12,7 @@ const DIST = path.join(SRC, 'dist');
 const DATA = path.join(SRC, 'data', 'decisions.json');
 const SITE_URL = 'https://yournextstep.ai';
 const SITE_NAME = 'YourNextStep.ai';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.svg`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 const ITEMS_PER_PAGE = 30;
 
 const ICONS = {
@@ -259,13 +259,15 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
   <meta property="og:site_name" content="${SITE_NAME}">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="${resolvedOgImage}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="YourNextStep.ai">
   <meta name="twitter:card" content="${resolvedTwitterCard}">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${resolvedOgImage}">
   <link rel="canonical" href="${canonical}">
-  <link rel="alternate" hreflang="en" href="${canonical}">
   <link rel="stylesheet" href="/style.css">
   ${jsonLd}
 </head>
@@ -577,7 +579,7 @@ function decisionPageHTML(d, allDecisions) {
     const slot = affiliateSlotFor(index);
     const merchant = ns.affiliateUrl ? merchantFromUrl(ns.affiliateUrl) : '';
     const ctaHTML = ns.affiliateUrl
-      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta affiliate-link" rel="sponsored nofollow noopener noreferrer" target="_blank" data-affiliate="true" data-slot="${slot}" data-merchant="${esc(merchant)}" data-page-path="/${d.slug}/" data-item-id="${d.slug}-${index + 1}" data-item-title="${esc(ns.action)}" aria-label="${esc(`Advertising link to ${merchant}: ${ns.action}`)}">${esc(ns.affiliateLabel || 'View offer')} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
+      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta affiliate-link" rel="sponsored nofollow noopener noreferrer" target="_blank" data-affiliate="true" data-slot="${slot}" data-merchant="${esc(merchant)}" data-page-path="/${d.slug}/" data-item-id="${d.slug}-${index + 1}" data-item-title="${esc(ns.action)}" aria-label="${esc(`Advertising link: ${merchant}. ${ns.affiliateLabel || 'View offer'}`)}">${esc(ns.affiliateLabel || 'View offer')} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
       : '';
     return `<div class="next-step-card${isPrimary}">
               <div class="next-step-info"><h4>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h4></div>
@@ -1068,7 +1070,7 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
 
   // Copy static assets
-  for (const f of ['style.css', 'script.js', 'favicon.svg', 'og-default.svg', 'google1a314224e4d44867.html']) {
+  for (const f of ['style.css', 'script.js', 'favicon.svg', 'og-default.svg', 'og-default.png', 'google1a314224e4d44867.html']) {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 

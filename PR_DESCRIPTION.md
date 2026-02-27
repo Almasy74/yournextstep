@@ -4,7 +4,8 @@
 - Utvidet metadata i `shell()`:
   - OpenGraph: `og:site_name`, `og:locale`, fleksibel `og:type`, `og:image`.
   - Twitter cards: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.
-  - `author` meta + `hreflang`-alternate.
+  - `author` meta.
+  - `og:image` satt til absolutt PNG (`https://yournextstep.ai/og-default.png`) med type + dimensjoner.
 - Lagt til global schema:
   - `Organization` og `WebSite` på alle sider.
 - Forbedret `Article` schema:
@@ -16,10 +17,12 @@
 - Event tracking for affiliate-CTR:
   - Ny event: `affiliate_click`.
   - Parametere: `{ url, merchant, page_path, slot, item_id, item_title }`.
+  - Deduplisering: guard mot dobbeltsending ved raske/nestede klikk.
+  - Consent-gating: tracking stoppes ved eksplisitt analytics-nekt.
   - Integrasjoner: `gtag`, `plausible`, `matomo(_paq)`, `segment(analytics.track)`.
   - Fallback: custom event bus `yournextstep:affiliate_click` + dev console log.
 - Infrastruktur:
-  - Ny `og-default.svg` og kopiering til `dist/`.
+  - Ny `og-default.png` (1200x630) + `og-default.svg`, begge kopieres til `dist/`.
   - Netlify: `www -> apex` 301 redirect + immutable cache headers for statiske assets.
 
 ## Hvordan verifisere

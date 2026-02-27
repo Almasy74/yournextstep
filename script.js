@@ -313,6 +313,7 @@ function initAffiliateTracking() {
   document.addEventListener('click', (event) => {
     const anchor = event.target.closest('a.next-step-cta[data-affiliate="true"]');
     if (!anchor) return;
+    if (isDuplicateAffiliateClick(anchor)) return;
 
     const payload = {
       url: anchor.href,
@@ -324,10 +325,12 @@ function initAffiliateTracking() {
     };
 
     trackAffiliateClick(payload);
-  });
+  }, true);
 }
 
 function trackAffiliateClick(payload) {
+  if (!isAffiliateTrackingAllowed()) return;
+
   if (typeof window.gtag === 'function') {
     window.gtag('event', 'affiliate_click', payload);
   }
@@ -355,4 +358,20 @@ function trackAffiliateClick(payload) {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     console.info('[affiliate_click]', payload);
   }
+}
+
+function isDuplicateAffiliateClick(anchor) {
+  const now = Date.now();
+  const prev = Number(anchor.dataset.lastAffiliateClickTs || 0);
+  anchor.dataset.lastAffiliateClickTs = String(now);
+  return now - prev < 600;
+}
+
+function isAffiliateTrackingAllowed() {
+  // Honor explicit deny flags if a consent manager is present.
+  if (window.ynsConsent && window.ynsConsent.analytics === false) return false;
+  if (window.__tcfapi && window.ynsConsent && window.ynsConsent.analytics === true) return true;
+
+  if (window.gtag && typeof window.gtag === 'function' && window['ga-disable'] === true) return false;
+  return true;
 }
