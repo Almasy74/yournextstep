@@ -544,7 +544,7 @@
         "isPrimary": false
       },
       {
-        "action": "Set up a simple landing page to validate demand before building anything. Use Carrd or Framer for a quick test page.",
+        "action": "Set up a simple landing page to validate demand before building anything. Start with Carrd - the fastest way to launch a test page in under an hour.",
         "affiliateUrl": "https://try.carrd.co/kw14vb49",
         "affiliateLabel": "Validate with Carrd ->",
         "isPrimary": true
