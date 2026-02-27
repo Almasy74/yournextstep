@@ -14,6 +14,11 @@ const SITE_URL = 'https://yournextstep.ai';
 const SITE_NAME = 'YourNextStep.ai';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 const ITEMS_PER_PAGE = 30;
+const ASSET_VERSION = String(Math.floor(Date.now() / 1000));
+
+function asset(pathname) {
+  return `${pathname}?v=${ASSET_VERSION}`;
+}
 
 const ICONS = {
   compass: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="site-icon"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
@@ -279,7 +284,7 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="${asset('/favicon.svg')}">
   <title>${esc(title)} — ${SITE_NAME}</title>
   <meta name="description" content="${esc(description)}">
   ${robotsMeta}
@@ -300,7 +305,7 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${resolvedOgImage}">
   <link rel="canonical" href="${canonical}">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="${asset('/style.css')}">
   ${jsonLd}
 </head>
 <body class="${bodyClass || ''}">
@@ -310,7 +315,7 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
     ${content}
   </main>
   ${footerHTML()}
-  <script src="/script.js"></script>
+  <script src="${asset('/script.js')}"></script>
 </body>
 </html>`;
 }
@@ -320,7 +325,7 @@ function navHTML() {
     <div class="container site-header-inner">
       <div class="site-header-left">
         <a href="/" class="site-logo" aria-label="YourNextStep.ai home">
-          <img src="/logo-header.png" class="site-logo-image" alt="YourNextStep.ai">
+          <img src="${asset('/logo-header.png')}" class="site-logo-image" alt="YourNextStep.ai" width="220" height="43" style="height:44px;width:auto;max-height:44px;">
         </a>
       </div>
       
