@@ -92,6 +92,7 @@ async function main() {
 
             // Estimate duration (MP3 128kbps ≈ 16KB/sec)
             const estimatedDuration = Math.round(bytes / 16000);
+            d.audio.audioUrl = `/audio/${filename}`;
             d.audio.durationSec = estimatedDuration;
             d.audio.provider = 'openai';
             d.audio.voice = VOICE;
