@@ -302,6 +302,7 @@ function navHTML() {
           <li><a href="/learning/">Learning</a></li>
           <li><a href="/money-decisions/">Money</a></li>
           <li><a href="/side-hustles/">Side Hustles</a></li>
+          <li><a href="/best-of/">Best Of</a></li>
           <li><a href="/about.html">About</a></li>
         </ul>
       </nav>
@@ -348,6 +349,7 @@ function footerHTML() {
           <li><a href="/how-scoring-works.html">How Scoring Works</a></li>
           <li><a href="/sources-update-policy.html">Sources & Updates</a></li>
           <li><a href="/disclaimer.html">Disclaimer</a></li>
+          <li><a href="/best-of/">Best Of Guides</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -623,6 +625,11 @@ function decisionPageHTML(d, allDecisions) {
           </a>`).join('')}
         </div>
       </section>` : ''}
+
+      <section class="decision-section" aria-label="Explore more guides">
+        <h2>Explore More Guides</h2>
+        <p style="color:var(--text-secondary);">Browse the <a href="/best-of/">Best Of hub</a> or continue in <a href="/${d.category}/">${esc(catMeta.title)}</a>.</p>
+      </section>
     </div>`;
 
   return shell({
@@ -843,6 +850,7 @@ function homepageHTML(allDecisions) {
             </a>`;
   }).join('')}
         </div>
+        <p style="margin-top:var(--space-6); text-align:center;"><a href="/best-of/" class="hero-cta" style="display:inline-flex;">Browse best of guides</a></p>
       </div>
     </section>` : ''}`;
 
@@ -852,6 +860,51 @@ function homepageHTML(allDecisions) {
     canonical: SITE_URL + '/',
     bodyClass: 'page-home',
     content
+  });
+}
+
+function bestOfPageHTML(allDecisions) {
+  const topByConfidence = [...allDecisions]
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 12);
+  const breadcrumbItems = [
+    { name: 'Home', url: SITE_URL + '/' },
+    { name: 'Best Of', url: SITE_URL + '/best-of/' }
+  ];
+
+  const content = `<div class="container container--wide">
+      <section class="section">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span class="separator">›</span>
+          <span aria-current="page">Best Of</span>
+        </nav>
+        <h1>Best Of Decision Guides</h1>
+        <p style="color:var(--text-secondary); max-width:760px; margin-top:var(--space-3);">A curated set of high-confidence decision guides to help you start with the most actionable topics.</p>
+      </section>
+      <section class="section">
+        <div class="decision-card-grid">
+          ${topByConfidence.map(d => {
+    const vTag = verdictTagClass(d.verdict);
+    return `<a href="/${d.slug}/" class="decision-card">
+              <div class="decision-card-top">
+                <span class="decision-card-verdict ${vTag}">${d.verdict}</span>
+                <span class="decision-card-confidence">${d.confidence}% confidence</span>
+              </div>
+              <h2 class="decision-card-title">${esc(d.title)}</h2>
+              <p class="decision-card-desc">${esc((d.metaDescription || '').slice(0, 130))}...</p>
+            </a>`;
+  }).join('')}
+        </div>
+      </section>
+    </div>`;
+
+  return shell({
+    title: 'Best Of Decision Guides',
+    description: 'Start with the highest-confidence decision guides across career, AI, learning, and money topics.',
+    canonical: SITE_URL + '/best-of/',
+    bodyClass: 'page-best-of',
+    content,
+    jsonLdBlocks: [jsonLD_Breadcrumb(breadcrumbItems)]
   });
 }
 
@@ -1095,6 +1148,7 @@ async function build() {
   // Generate category pages with pagination
   const sitemapUrls = [
     { url: SITE_URL + '/', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/best-of/', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/about.html', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/how-scoring-works.html', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/sources-update-policy.html', lastmod: new Date().toISOString().slice(0, 10) },
@@ -1126,6 +1180,9 @@ async function build() {
   }
 
   // Trust pages
+  const bestOfDir = path.join(DIST, 'best-of');
+  await fs.ensureDir(bestOfDir);
+  await fs.writeFile(path.join(bestOfDir, 'index.html'), bestOfPageHTML(publishable));
   await fs.writeFile(path.join(DIST, 'about.html'), aboutPageHTML());
   await fs.writeFile(path.join(DIST, 'how-scoring-works.html'), scoringPageHTML());
   await fs.writeFile(path.join(DIST, 'sources-update-policy.html'), sourcesPageHTML());
@@ -1137,6 +1194,7 @@ async function build() {
   await fs.ensureDir(affDir);
   await fs.writeFile(path.join(affDir, 'index.html'), affiliateDisclosurePageHTML());
   console.log('  📄 affiliate-disclosure/index.html');
+  console.log('  📄 best-of/index.html');
   console.log('  📄 about.html, how-scoring-works.html, sources-update-policy.html, disclaimer.html, 404.html');
 
   // Sitemap
