@@ -87,6 +87,17 @@ function estimateReadingTime(d) {
   return Math.max(5, Math.ceil(words / 200));
 }
 
+function parseISODate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function daysSince(dateObj) {
+  const now = new Date();
+  return Math.floor((now - dateObj) / (1000 * 60 * 60 * 24));
+}
+
 // ─── QA Gate (strict thresholds for scale) ──────────────────
 function qaCheck(d) {
   const errors = [];
@@ -110,6 +121,27 @@ function qaCheck(d) {
   if (!['Yes', 'No', 'Depends'].includes(d.verdict)) errors.push(`verdict "${d.verdict}" invalid`);
   if (!d.slug) errors.push('missing slug');
   if (!d.title) errors.push('missing title');
+  if (!d.publishedDate) errors.push('missing publishedDate');
+  if (!d.updatedDate) errors.push('missing updatedDate');
+
+  const publishedDate = parseISODate(d.publishedDate);
+  const updatedDate = parseISODate(d.updatedDate);
+  if (!publishedDate) errors.push(`invalid publishedDate "${d.publishedDate}" (expected YYYY-MM-DD)`);
+  if (!updatedDate) errors.push(`invalid updatedDate "${d.updatedDate}" (expected YYYY-MM-DD)`);
+  if (publishedDate && updatedDate && updatedDate < publishedDate) {
+    errors.push('updatedDate is earlier than publishedDate');
+  }
+  if (updatedDate) {
+    const ageDays = daysSince(updatedDate);
+    if (ageDays > 120) warnings.push(`content is ${ageDays} days old - refresh recommended`);
+    if (ageDays > 365) errors.push(`content is stale (${ageDays} days since update)`);
+  }
+
+  const sourcesCount = (d.sources || []).length;
+  if (sourcesCount < 4) warnings.push(`sources has ${sourcesCount} items (recommended min 4)`);
+  const urlLikeSources = (d.sources || []).filter((s) => /^https?:\/\//i.test(String(s).trim())).length;
+  if (urlLikeSources < 1) warnings.push('sources contain no direct source URLs');
+
   // Affiliate count guard (hard rule: max 3)
   const affiliateCount = (d.nextSteps || []).filter(ns => ns.affiliateUrl).length;
   if (affiliateCount > 3) errors.push(`${affiliateCount} affiliate links exceeds hard limit of 3`);

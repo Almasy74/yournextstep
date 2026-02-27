@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAudioScriptToggle();
   initSearch();
   initAffiliateTracking();
+  initCWVMetrics();
 });
 
 /* --- Mobile Navigation --- */
@@ -329,34 +330,99 @@ function initAffiliateTracking() {
 }
 
 function trackAffiliateClick(payload) {
-  if (!isAffiliateTrackingAllowed()) return;
-
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', 'affiliate_click', payload);
-  }
-
-  if (typeof window.plausible === 'function') {
-    window.plausible('affiliate_click', { props: payload });
-  }
-
-  if (Array.isArray(window._paq)) {
-    window._paq.push([
-      'trackEvent',
-      'affiliate',
-      'affiliate_click',
-      `${payload.slot}:${payload.merchant}`,
-      1
-    ]);
-  }
-
-  if (window.analytics && typeof window.analytics.track === 'function') {
-    window.analytics.track('affiliate_click', payload);
-  }
+  sendAnalyticsEvent('affiliate_click', payload);
 
   window.dispatchEvent(new CustomEvent('yournextstep:affiliate_click', { detail: payload }));
 
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     console.info('[affiliate_click]', payload);
+  }
+}
+
+/* --- Core Web Vitals RUM --- */
+function initCWVMetrics() {
+  if (typeof PerformanceObserver === 'undefined') return;
+  const metrics = { lcp: null, cls: 0, inp: null };
+  const sent = new Set();
+
+  try {
+    const lcpObserver = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      const last = entries[entries.length - 1];
+      if (last) metrics.lcp = Math.round(last.startTime);
+    });
+    lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+  } catch (_) {
+    // no-op for unsupported browsers
+  }
+
+  try {
+    const clsObserver = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) metrics.cls += entry.value;
+      }
+    });
+    clsObserver.observe({ type: 'layout-shift', buffered: true });
+  } catch (_) {
+    // no-op for unsupported browsers
+  }
+
+  try {
+    const inpObserver = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const current = Math.round(entry.duration);
+        metrics.inp = Math.max(metrics.inp || 0, current);
+      }
+    });
+    inpObserver.observe({ type: 'event', durationThreshold: 40, buffered: true });
+  } catch (_) {
+    // no-op for unsupported browsers
+  }
+
+  function flushCWV() {
+    const payloads = [
+      { metric: 'LCP', value: metrics.lcp },
+      { metric: 'CLS', value: Number(metrics.cls.toFixed(4)) },
+      { metric: 'INP', value: metrics.inp }
+    ];
+
+    payloads.forEach((m) => {
+      if (m.value === null || m.value === undefined) return;
+      const dedupeKey = `${m.metric}:${m.value}`;
+      if (sent.has(dedupeKey)) return;
+      sent.add(dedupeKey);
+      sendAnalyticsEvent('cwv_metric', {
+        metric_name: m.metric,
+        metric_value: m.value,
+        page_path: window.location.pathname
+      });
+    });
+  }
+
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushCWV();
+  });
+  window.addEventListener('pagehide', flushCWV);
+}
+
+function sendAnalyticsEvent(eventName, payload) {
+  if (!isAffiliateTrackingAllowed()) return;
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', eventName, payload);
+  }
+
+  if (typeof window.plausible === 'function') {
+    window.plausible(eventName, { props: payload });
+  }
+
+  if (Array.isArray(window._paq)) {
+    const label = payload.slot && payload.merchant ? `${payload.slot}:${payload.merchant}` : (payload.metric_name || eventName);
+    window._paq.push(['trackEvent', 'site', eventName, label, 1]);
+  }
+
+  if (window.analytics && typeof window.analytics.track === 'function') {
+    window.analytics.track(eventName, payload);
   }
 }
 

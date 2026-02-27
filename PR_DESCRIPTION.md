@@ -21,6 +21,9 @@
   - Consent-gating: tracking sendes kun ved eksplisitt analytics-enable (`window.ynsConsent.analytics=true` eller `window.ynsEnableAnalytics=true`).
   - Integrasjoner: `gtag`, `plausible`, `matomo(_paq)`, `segment(analytics.track)`.
   - Fallback: custom event bus `yournextstep:affiliate_click` + dev console log.
+- CWV RUM:
+  - Lagt til lettvekts måling av `LCP`, `CLS`, `INP` i frontend.
+  - Ny event: `cwv_metric` med `{ metric_name, metric_value, page_path }`.
 - Infrastruktur:
   - Ny `og-default.png` (1200x630) + `og-default.svg`, begge kopieres til `dist/`.
   - Netlify: `www -> apex` 301 redirect + immutable cache headers for statiske assets.
@@ -30,6 +33,8 @@
 - Kvalitetsgate i CI:
   - Ny release-gate script for metadata/schema/affiliate-attributter.
   - Ny GitHub Actions workflow med Linux-basert Lighthouse CI.
+- Innholds-QA i build:
+  - Dato-validering (`publishedDate`/`updatedDate`), staleness-check og minimumskrav til sources.
 
 ## Hvordan verifisere
 1. Kjør build:

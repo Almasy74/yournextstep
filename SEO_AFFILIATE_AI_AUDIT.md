@@ -50,11 +50,15 @@
   - Immutable cache headers i [`netlify.toml:12`](/c:/yournextstep/netlify.toml:12).
 - CWV quick win:
   - Fjernet render-blocking Google Fonts import fra [`style.css`](/c:/yournextstep/style.css).
+- CWV observability:
+  - Lagt til RUM-event `cwv_metric` (LCP/CLS/INP) i [`script.js`](/c:/yournextstep/script.js).
 - Internlenking:
   - Ny hub-side `/best-of/` lagt til med nav/footer/sitemap-kobling.
 - CI-baseline:
   - Ny Linux-basert Lighthouse workflow + `lighthouserc.json`.
   - Ny release-gate script: [`scripts/release-gate.js`](/c:/yournextstep/scripts/release-gate.js).
+- Content freshness QA:
+  - `qaCheck()` validerer datoformat, staleness og minimum kildedekning i [`build.js`](/c:/yournextstep/build.js).
 
 ## Prioritert Tiltaksliste
 
