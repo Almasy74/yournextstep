@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAudioPlayer();
   initAudioScriptToggle();
   initSearch();
+  initAffiliateTracking();
 });
 
 /* --- Mobile Navigation --- */
@@ -305,4 +306,53 @@ function initSearch() {
       toggleSearchBar(false);
     }
   });
+}
+
+/* --- Affiliate Tracking --- */
+function initAffiliateTracking() {
+  document.addEventListener('click', (event) => {
+    const anchor = event.target.closest('a.next-step-cta[data-affiliate="true"]');
+    if (!anchor) return;
+
+    const payload = {
+      url: anchor.href,
+      merchant: anchor.dataset.merchant || 'unknown',
+      page_path: anchor.dataset.pagePath || window.location.pathname,
+      slot: anchor.dataset.slot || 'unknown',
+      item_id: anchor.dataset.itemId || '',
+      item_title: anchor.dataset.itemTitle || ''
+    };
+
+    trackAffiliateClick(payload);
+  });
+}
+
+function trackAffiliateClick(payload) {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'affiliate_click', payload);
+  }
+
+  if (typeof window.plausible === 'function') {
+    window.plausible('affiliate_click', { props: payload });
+  }
+
+  if (Array.isArray(window._paq)) {
+    window._paq.push([
+      'trackEvent',
+      'affiliate',
+      'affiliate_click',
+      `${payload.slot}:${payload.merchant}`,
+      1
+    ]);
+  }
+
+  if (window.analytics && typeof window.analytics.track === 'function') {
+    window.analytics.track('affiliate_click', payload);
+  }
+
+  window.dispatchEvent(new CustomEvent('yournextstep:affiliate_click', { detail: payload }));
+
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.info('[affiliate_click]', payload);
+  }
 }
