@@ -48,6 +48,13 @@
   - `www -> apex` 301 i [`netlify.toml:5`](/c:/yournextstep/netlify.toml:5).
 - Cache hints for statiske assets manglet:
   - Immutable cache headers i [`netlify.toml:12`](/c:/yournextstep/netlify.toml:12).
+- CWV quick win:
+  - Fjernet render-blocking Google Fonts import fra [`style.css`](/c:/yournextstep/style.css).
+- Internlenking:
+  - Ny hub-side `/best-of/` lagt til med nav/footer/sitemap-kobling.
+- CI-baseline:
+  - Ny Linux-basert Lighthouse workflow + `lighthouserc.json`.
+  - Ny release-gate script: [`scripts/release-gate.js`](/c:/yournextstep/scripts/release-gate.js).
 
 ## Prioritert Tiltaksliste
 
@@ -73,7 +80,7 @@
   - Effekt: moderat/høy (målbar CWV-oppfølging).
   - Risiko: lav.
   - Innsats: medium.
-  - Hvordan: kjør LHCI i Linux CI for å unngå lokal Windows EPERM.
+  - Hvordan: implementert i GitHub Actions + `lighthouserc.json`.
 - Internlenk hubs (“best of”, sammenligningssider) (innholdsarbeid)
   - Effekt: moderat/høy.
   - Risiko: lav.
@@ -109,6 +116,13 @@
   - Bygg entity-konsistens i innhold (forfatter/prosess/siterbare kilder per side).
   - Legg til `sameAs` i Organization når offisielle profiler finnes.
   - Kun bruk `Product/Review/AggregateRating` ved verifiserbare reelle data.
+
+## Off-Page Autoritet
+- Implementert som operasjonell plan i [`OFFPAGE_AUTHORITY_PLAN.md`](/c:/yournextstep/OFFPAGE_AUTHORITY_PLAN.md):
+  - linkable assets
+  - digital PR outreach
+  - entity/profile-konsistens
+  - KPI-basert iterasjon
 
 ## Money Pages (affiliate)
 - Publiserte sider: 20

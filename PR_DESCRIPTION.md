@@ -18,12 +18,18 @@
   - Ny event: `affiliate_click`.
   - Parametere: `{ url, merchant, page_path, slot, item_id, item_title }`.
   - Deduplisering: guard mot dobbeltsending ved raske/nestede klikk.
-  - Consent-gating: tracking stoppes ved eksplisitt analytics-nekt.
+  - Consent-gating: tracking sendes kun ved eksplisitt analytics-enable (`window.ynsConsent.analytics=true` eller `window.ynsEnableAnalytics=true`).
   - Integrasjoner: `gtag`, `plausible`, `matomo(_paq)`, `segment(analytics.track)`.
   - Fallback: custom event bus `yournextstep:affiliate_click` + dev console log.
 - Infrastruktur:
   - Ny `og-default.png` (1200x630) + `og-default.svg`, begge kopieres til `dist/`.
   - Netlify: `www -> apex` 301 redirect + immutable cache headers for statiske assets.
+- Internlenking:
+  - Ny hub-side: `/best-of/`.
+  - Lagt inn internlenker til huben i nav/footer/homepage/decisionsider.
+- Kvalitetsgate i CI:
+  - Ny release-gate script for metadata/schema/affiliate-attributter.
+  - Ny GitHub Actions workflow med Linux-basert Lighthouse CI.
 
 ## Hvordan verifisere
 1. Kjør build:
