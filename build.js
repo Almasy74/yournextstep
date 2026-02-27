@@ -11,6 +11,8 @@ const SRC = __dirname;
 const DIST = path.join(SRC, 'dist');
 const DATA = path.join(SRC, 'data', 'decisions.json');
 const SITE_URL = 'https://yournextstep.ai';
+const SITE_NAME = 'YourNextStep.ai';
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.svg`;
 const ITEMS_PER_PAGE = 30;
 
 const ICONS = {
@@ -147,6 +149,21 @@ function verdictTagClass(v) {
   return 'tag-depends';
 }
 
+function merchantFromUrl(url) {
+  try {
+    const host = new URL(url).hostname.toLowerCase().replace(/^www\./, '');
+    return host || 'external-merchant';
+  } catch {
+    return 'external-merchant';
+  }
+}
+
+function affiliateSlotFor(index) {
+  if (index === 0) return 'top-of-content';
+  if (index === 1) return 'mid';
+  return 'footer';
+}
+
 function jsonLD_FAQ(faq) {
   return JSON.stringify({
     '@context': 'https://schema.org',
@@ -163,12 +180,22 @@ function jsonLD_Article(d) {
   return JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': `${SITE_URL}/${d.slug}/#article`,
+    'mainEntityOfPage': `${SITE_URL}/${d.slug}/`,
     'headline': d.title,
     'description': d.metaDescription,
     'datePublished': d.publishedDate,
     'dateModified': d.updatedDate,
-    'author': { '@type': 'Organization', 'name': 'YourNextStep.ai' },
-    'publisher': { '@type': 'Organization', 'name': 'YourNextStep.ai' }
+    'author': { '@type': 'Organization', 'name': SITE_NAME },
+    'publisher': {
+      '@type': 'Organization',
+      'name': SITE_NAME,
+      'logo': {
+        '@type': 'ImageObject',
+        'url': `${SITE_URL}/favicon.svg`
+      }
+    },
+    'image': DEFAULT_OG_IMAGE
   });
 }
 
@@ -185,25 +212,60 @@ function jsonLD_Breadcrumb(items) {
   });
 }
 
+function jsonLD_Organization() {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
+    'name': SITE_NAME,
+    'url': SITE_URL,
+    'logo': `${SITE_URL}/favicon.svg`
+  });
+}
+
+function jsonLD_WebSite() {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    'url': SITE_URL,
+    'name': SITE_NAME,
+    'publisher': { '@id': `${SITE_URL}/#organization` }
+  });
+}
+
 // ─── Shell: wraps every page ────────────────────────────────
-function shell({ title, description, canonical, bodyClass, content, noindex, jsonLdBlocks }) {
+function shell({ title, description, canonical, bodyClass, content, noindex, jsonLdBlocks, ogType, ogImage, twitterCard }) {
   const robotsMeta = noindex ? '<meta name="robots" content="noindex, nofollow">' : '';
-  const jsonLd = (jsonLdBlocks || []).map(j => `<script type="application/ld+json">${j}</script>`).join('\n');
+  const mergedJsonLdBlocks = [jsonLD_Organization(), jsonLD_WebSite(), ...(jsonLdBlocks || [])];
+  const jsonLd = mergedJsonLdBlocks.map(j => `<script type="application/ld+json">${j}</script>`).join('\n');
+  const resolvedOgType = ogType || 'website';
+  const resolvedOgImage = ogImage || DEFAULT_OG_IMAGE;
+  const resolvedTwitterCard = twitterCard || 'summary_large_image';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title>${esc(title)} — YourNextStep.ai</title>
+  <title>${esc(title)} — ${SITE_NAME}</title>
   <meta name="description" content="${esc(description)}">
   ${robotsMeta}
+  <meta name="author" content="${SITE_NAME}">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="${resolvedOgType}">
   <meta property="og:url" content="${canonical}">
-  <meta property="og:image" content="${SITE_URL}/og-default.png">
+  <meta property="og:site_name" content="${SITE_NAME}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="${resolvedOgImage}">
+  <meta property="og:image:alt" content="YourNextStep.ai">
+  <meta name="twitter:card" content="${resolvedTwitterCard}">
+  <meta name="twitter:title" content="${esc(title)}">
+  <meta name="twitter:description" content="${esc(description)}">
+  <meta name="twitter:image" content="${resolvedOgImage}">
   <link rel="canonical" href="${canonical}">
+  <link rel="alternate" hreflang="en" href="${canonical}">
   <link rel="stylesheet" href="/style.css">
   ${jsonLd}
 </head>
@@ -510,10 +572,12 @@ function decisionPageHTML(d, allDecisions) {
           <strong>Ad</strong> · Some links below are advertising (affiliate) links. If you use them, we may earn a commission. Our analysis is independent. <a href="/affiliate-disclosure/">Full disclosure</a>.
         </div>` : ''}
         <div class="next-steps-list">
-          ${d.nextSteps.slice(0, 3).map(ns => {
+          ${d.nextSteps.slice(0, 3).map((ns, index) => {
     const isPrimary = ns.isPrimary ? ' primary' : '';
+    const slot = affiliateSlotFor(index);
+    const merchant = ns.affiliateUrl ? merchantFromUrl(ns.affiliateUrl) : '';
     const ctaHTML = ns.affiliateUrl
-      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta" rel="sponsored nofollow noopener noreferrer" target="_blank">${esc(ns.affiliateLabel)} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
+      ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta affiliate-link" rel="sponsored nofollow noopener noreferrer" target="_blank" data-affiliate="true" data-slot="${slot}" data-merchant="${esc(merchant)}" data-page-path="/${d.slug}/" data-item-id="${d.slug}-${index + 1}" data-item-title="${esc(ns.action)}" aria-label="${esc(`Advertising link to ${merchant}: ${ns.action}`)}">${esc(ns.affiliateLabel || 'View offer')} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
       : '';
     return `<div class="next-step-card${isPrimary}">
               <div class="next-step-info"><h4>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h4></div>
@@ -564,6 +628,7 @@ function decisionPageHTML(d, allDecisions) {
     description: d.metaDescription,
     canonical: `${SITE_URL}/${d.slug}/`,
     bodyClass: 'page-decision',
+    ogType: 'article',
     content,
     noindex: d.noindex,
     jsonLdBlocks
@@ -1003,7 +1068,7 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
 
   // Copy static assets
-  for (const f of ['style.css', 'script.js', 'favicon.svg', 'google1a314224e4d44867.html']) {
+  for (const f of ['style.css', 'script.js', 'favicon.svg', 'og-default.svg', 'google1a314224e4d44867.html']) {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 
