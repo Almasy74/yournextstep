@@ -368,10 +368,19 @@ function isDuplicateAffiliateClick(anchor) {
 }
 
 function isAffiliateTrackingAllowed() {
-  // Honor explicit deny flags if a consent manager is present.
-  if (window.ynsConsent && window.ynsConsent.analytics === false) return false;
-  if (window.__tcfapi && window.ynsConsent && window.ynsConsent.analytics === true) return true;
+  // Explicit consent object from CMP/app state.
+  if (window.ynsConsent && typeof window.ynsConsent.analytics === 'boolean') {
+    return window.ynsConsent.analytics;
+  }
+
+  // Optional explicit app-level enable flag.
+  if (typeof window.ynsEnableAnalytics === 'boolean') {
+    return window.ynsEnableAnalytics;
+  }
+
+  // If TCF exists but no mapped consent, fail closed.
+  if (typeof window.__tcfapi === 'function') return false;
 
   if (window.gtag && typeof window.gtag === 'function' && window['ga-disable'] === true) return false;
-  return true;
+  return false;
 }

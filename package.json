@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build.js",
     "dev": "node build.js --watch",
-    "clean": "node -e \"require('fs-extra').removeSync('dist')\""
+    "clean": "node -e \"require('fs-extra').removeSync('dist')\"",
+    "verify:seo": "node scripts/release-gate.js"
   },
   "keywords": ["ai", "decisions", "career", "seo"],
   "license": "UNLICENSED",
