@@ -23,7 +23,7 @@
   - Fallback: custom event bus `yournextstep:affiliate_click` + dev console log.
 - CWV RUM:
   - Lagt til lettvekts måling av `LCP`, `CLS`, `INP` i frontend.
-  - Ny event: `cwv_metric` med `{ metric_name, metric_value, page_path }`.
+  - Ny event: `cwv_metric` med `{ metric_name, metric_value, metric_rating, page_template, page_path }`.
 - Infrastruktur:
   - Ny `og-default.png` (1200x630) + `og-default.svg`, begge kopieres til `dist/`.
   - Netlify: `www -> apex` 301 redirect + immutable cache headers for statiske assets.
@@ -33,6 +33,7 @@
 - Kvalitetsgate i CI:
   - Ny release-gate script for metadata/schema/affiliate-attributter.
   - Ny GitHub Actions workflow med Linux-basert Lighthouse CI.
+  - Ny planlagt prod-gate workflow (`verify:seo -- --prod`) mot live URL.
 - Innholds-QA i build:
   - Dato-validering (`publishedDate`/`updatedDate`), staleness-check og minimumskrav til sources.
 

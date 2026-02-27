@@ -101,6 +101,7 @@
 ## Affiliate-CTR Anbefalinger (plasseringer/komponenter)
 - Standardiserte slots nå tilgjengelig i tracking: `top-of-content`, `mid`, `footer` via [`build.js:161`](/c:/yournextstep/build.js:161).
 - Slot taxonomy (kontrollert sett i denne implementasjonen): `top-of-content`, `mid`, `footer`.
+- Slot taxonomy er nå enforced i release-gate på alle genererte HTML-sider.
 - Mål CTR per:
   - `page_path`
   - `slot`
@@ -147,3 +148,4 @@
 - [ ] Sjekk at `Organization` + `WebSite` + `Article` + `Breadcrumb` JSON-LD validerer.
 - [ ] Sjekk `www -> apex` redirect i Netlify preview.
 - [ ] Kjør Lighthouse i CI (Linux) for stabile numeriske baseline-scorer.
+- [ ] Kjør planlagt prod release-gate (`verify:seo -- --prod`) for løpende produksjonskontroll.

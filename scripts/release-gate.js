@@ -48,6 +48,19 @@ function validateAffiliateLinks(filePath) {
   }
 }
 
+function walkHtmlFiles(dir) {
+  const result = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      result.push(...walkHtmlFiles(p));
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.html')) {
+      result.push(p);
+    }
+  }
+  return result;
+}
+
 function runLocalChecks() {
   assert(fs.existsSync(path.join(DIST, 'robots.txt')), 'dist/robots.txt missing');
   assert(fs.existsSync(path.join(DIST, 'sitemap.xml')), 'dist/sitemap.xml missing');
@@ -56,10 +69,11 @@ function runLocalChecks() {
   const home = path.join(DIST, 'index.html');
   const bestOf = path.join(DIST, 'best-of', 'index.html');
   const decision = path.join(DIST, 'should-i-learn-ai-in-2026', 'index.html');
+  const htmlFiles = walkHtmlFiles(DIST);
 
   [home, bestOf, decision].forEach((p) => assert(fs.existsSync(p), `${p} missing`));
   [home, bestOf, decision].forEach(validateHtmlBasics);
-  validateAffiliateLinks(decision);
+  htmlFiles.forEach(validateAffiliateLinks);
 
   const robots = read(path.join(DIST, 'robots.txt'));
   assert(/Sitemap: https:\/\/yournextstep\.ai\/sitemap\.xml/.test(robots), 'robots.txt sitemap URL invalid');
@@ -69,7 +83,7 @@ function runLocalChecks() {
 }
 
 async function runProdChecks() {
-  const targets = ['/robots.txt', '/sitemap.xml', '/best-of/'];
+  const targets = ['/', '/robots.txt', '/sitemap.xml', '/best-of/', '/should-i-learn-ai-in-2026/'];
   for (const t of targets) {
     const { status } = await fetchText(`${SITE_URL}${t}`);
     assert(status >= 200 && status < 400, `prod check failed for ${t} (${status})`);

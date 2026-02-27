@@ -394,6 +394,8 @@ function initCWVMetrics() {
       sendAnalyticsEvent('cwv_metric', {
         metric_name: m.metric,
         metric_value: m.value,
+        metric_rating: getMetricRating(m.metric, m.value),
+        page_template: getPageTemplate(),
         page_path: window.location.pathname
       });
     });
@@ -403,6 +405,35 @@ function initCWVMetrics() {
     if (document.visibilityState === 'hidden') flushCWV();
   });
   window.addEventListener('pagehide', flushCWV);
+}
+
+function getMetricRating(metric, value) {
+  if (metric === 'LCP') {
+    if (value <= 2500) return 'good';
+    if (value <= 4000) return 'ni';
+    return 'poor';
+  }
+  if (metric === 'CLS') {
+    if (value <= 0.1) return 'good';
+    if (value <= 0.25) return 'ni';
+    return 'poor';
+  }
+  if (metric === 'INP') {
+    if (value <= 200) return 'good';
+    if (value <= 500) return 'ni';
+    return 'poor';
+  }
+  return 'unknown';
+}
+
+function getPageTemplate() {
+  const path = window.location.pathname;
+  if (path === '/') return 'home';
+  if (/^\/best-of\/$/.test(path)) return 'hub';
+  if (/^\/(career-decisions|ai-and-jobs|learning|money-decisions|side-hustles)\/$/.test(path)) return 'category';
+  if (/^\/[^/]+\/$/.test(path)) return 'decision';
+  if (/\.html$/.test(path)) return 'trust';
+  return 'other';
 }
 
 function sendAnalyticsEvent(eventName, payload) {
