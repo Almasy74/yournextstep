@@ -319,7 +319,9 @@ function navHTML() {
   return `<header class="site-header">
     <div class="container site-header-inner">
       <div class="site-header-left">
-        <a href="/" class="logo" aria-label="YourNextStep.ai home">YourNextStep<span>.ai</span></a>
+        <a href="/" class="site-logo" aria-label="YourNextStep.ai home">
+          <img src="/logo.png" class="site-logo-image" alt="YourNextStep.ai">
+        </a>
       </div>
       
       <div class="nav-actions">
@@ -1155,7 +1157,7 @@ async function build() {
   await fs.writeFile(path.join(DIST, 'build-report.json'), JSON.stringify(report, null, 2));
 
   // Copy static assets
-  for (const f of ['style.css', 'script.js', 'favicon.svg', 'og-default.svg', 'og-default.png', 'google1a314224e4d44867.html']) {
+  for (const f of ['style.css', 'script.js', 'favicon.svg', 'logo.png', 'og-default.svg', 'og-default.png', 'google1a314224e4d44867.html']) {
     await fs.copy(path.join(SRC, f), path.join(DIST, f));
   }
 
