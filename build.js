@@ -297,13 +297,49 @@ function resolveRelatedSlugs(d, allPublished) {
 // ─── HTML Helpers ───────────────────────────────────────────
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
+function sourceLabelFromUrl(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase().replace(/^www\./, '');
+    const hostLabels = {
+      'bls.gov': 'BLS',
+      'coursera.org': 'Coursera',
+      'kaggle.com': 'Kaggle',
+      'oecd.org': 'OECD',
+      'weforum.org': 'World Economic Forum',
+      'mckinsey.com': 'McKinsey',
+      'spglobal.com': 'S&P Global',
+      'nerdwallet.com': 'NerdWallet',
+      'vanguard.com': 'Vanguard',
+      'gallup.com': 'Gallup',
+      'linkedin.com': 'LinkedIn',
+      'economicgraph.linkedin.com': 'LinkedIn Economic Graph'
+    };
+    const hostLabel = hostLabels[host] || host.toUpperCase();
+    const segments = u.pathname.split('/').filter(Boolean);
+    const last = segments.length ? segments[segments.length - 1] : '';
+    if (!last) return hostLabel;
+    const cleaned = last
+      .replace(/\.(html?|php)$/i, '')
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!cleaned) return hostLabel;
+    const title = cleaned.replace(/\b\w/g, (m) => m.toUpperCase());
+    return `${hostLabel}: ${title}`;
+  } catch {
+    return 'External Source';
+  }
+}
+
 function renderSourceItem(source) {
   if (!source) return '';
   if (typeof source === 'object') {
     const label = source.title || source.label || source.name || source.url || '';
     const url = sourceUrlFromEntry(source);
     if (url) {
-      return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label || url)}</a>`;
+      const finalLabel = (label && label !== source.url) ? label : sourceLabelFromUrl(url);
+      return `${esc(finalLabel)} - <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
     }
     return esc(label);
   }
@@ -313,7 +349,7 @@ function renderSourceItem(source) {
   if (!url) return esc(text);
 
   if (text === url) {
-    return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+    return `${esc(sourceLabelFromUrl(url))} - <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
   }
 
   const markdownLabelMatch = text.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/i);
