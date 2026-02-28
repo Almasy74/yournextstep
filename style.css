@@ -1584,6 +1584,18 @@ a:hover {
   font-weight: 600;
 }
 
+.related-verdict.tag-yes {
+  color: var(--verdict-yes);
+}
+
+.related-verdict.tag-no {
+  color: var(--verdict-no);
+}
+
+.related-verdict.tag-depends {
+  color: var(--verdict-depends);
+}
+
 /* --- Category Hero --- */
 .category-hero {
   background: var(--gradient-hero);
