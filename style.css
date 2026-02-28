@@ -1129,12 +1129,72 @@ a:hover {
   transition: width var(--transition-slow);
 }
 
+.scorecard-weighted-value {
+  display: none;
+}
+
 .scorecard-total {
   display: flex;
   justify-content: space-between;
   padding: var(--space-4) var(--space-6);
   font-weight: 700;
   background: rgba(59, 130, 246, 0.05);
+}
+
+@media (max-width: 640px) {
+  .scorecard-header {
+    display: none;
+  }
+
+  .scorecard-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .scorecard-cell {
+    display: grid;
+    grid-template-columns: minmax(72px, auto) 1fr;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .scorecard-cell::before {
+    content: attr(data-label);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .scorecard-cell-factor {
+    align-items: start;
+  }
+
+  .scorecard-cell-factor::before {
+    padding-top: 2px;
+  }
+
+  .scorecard-cell-weighted {
+    display: grid;
+    grid-template-columns: minmax(72px, auto) 1fr;
+    gap: var(--space-3);
+  }
+
+  .scorecard-cell-weighted .scorecard-weighted-value {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .scorecard-cell-weighted .scorecard-bar {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 /* --- Pros / Cons --- */
