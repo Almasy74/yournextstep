@@ -1437,10 +1437,17 @@ a:hover {
 }
 
 .audio-controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.audio-main {
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  margin-bottom: var(--space-4);
 }
 
 .btn-play {
@@ -1466,11 +1473,6 @@ a:hover {
 
 .audio-progress {
   flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 48px;
-  padding-bottom: 16px;
 }
 
 .progress-bar {
@@ -1491,10 +1493,7 @@ a:hover {
 }
 
 .audio-time {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  margin-left: calc(48px + var(--space-4));
   display: flex;
   justify-content: space-between;
   font-size: var(--fs-xs);

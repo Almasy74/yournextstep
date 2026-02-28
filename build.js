@@ -524,11 +524,13 @@ function decisionPageHTML(d, allDecisions) {
           <p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary' : 'Audio coming soon — read the transcript below'}</p>
           ${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio>
           <div class="audio-controls">
-            <button class="btn-play" aria-label="Play audio briefing">${ICONS.play}</button>
-            <div class="audio-progress">
-              <div class="progress-bar"><div class="progress-fill"></div></div>
-              <div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div>
+            <div class="audio-main">
+              <button class="btn-play" aria-label="Play audio briefing">${ICONS.play}</button>
+              <div class="audio-progress">
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+              </div>
             </div>
+            <div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div>
           </div>` : ''}
           <button class="audio-script-toggle" aria-expanded="false">Read transcript ▼</button>
           <div class="audio-script" role="region" aria-label="Audio transcript">
