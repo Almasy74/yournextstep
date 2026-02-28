@@ -539,19 +539,6 @@ a:hover {
 }
 
 @media (max-width: 768px) {
-  .site-logo {
-    max-width: 168px;
-    overflow: hidden;
-  }
-
-  .site-logo-image {
-    height: 34px;
-    width: 220px;
-    max-width: none;
-    object-fit: cover;
-    object-position: left center;
-  }
-
   .nav-toggle {
     display: block;
   }
@@ -571,12 +558,6 @@ a:hover {
 
   .nav-links.active {
     display: flex;
-  }
-}
-
-@media (max-width: 420px) {
-  .site-logo {
-    max-width: 150px;
   }
 }
 
