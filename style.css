@@ -204,7 +204,8 @@ a:hover {
 
 .benefit-card h3 .site-icon,
 .who-card h3 .site-icon,
-.audio-player h3 .site-icon {
+.audio-player h3 .site-icon,
+.audio-player h2 .site-icon {
   margin-right: var(--space-3);
   width: 1.3em;
   height: 1.3em;
@@ -217,7 +218,8 @@ a:hover {
   /* Alert yellow */
 }
 
-.next-step-info h4 .site-icon {
+.next-step-info h4 .site-icon,
+.next-step-info h3 .site-icon {
   width: 1em;
   height: 1em;
   margin-right: var(--space-2);
@@ -1270,7 +1272,8 @@ a:hover {
   padding: var(--space-6);
 }
 
-.scenario-card h4 {
+.scenario-card h4,
+.scenario-card h3 {
   font-size: var(--fs-base);
   font-weight: 700;
   margin-bottom: var(--space-3);
@@ -1314,7 +1317,8 @@ a:hover {
   min-width: 200px;
 }
 
-.next-step-info h4 {
+.next-step-info h4,
+.next-step-info h3 {
   font-weight: 600;
   margin-bottom: var(--space-1);
 }
@@ -1421,7 +1425,8 @@ a:hover {
   padding: var(--space-6);
 }
 
-.audio-player h3 {
+.audio-player h3,
+.audio-player h2 {
   font-size: var(--fs-lg);
   font-weight: 700;
   margin-bottom: var(--space-2);
@@ -1567,7 +1572,8 @@ a:hover {
   color: inherit;
 }
 
-.related-card h4 {
+.related-card h4,
+.related-card h3 {
   font-size: var(--fs-sm);
   font-weight: 600;
   margin-bottom: var(--space-1);
@@ -1976,7 +1982,8 @@ a:hover {
   max-width: 280px;
 }
 
-.footer-col h4 {
+.footer-col h4,
+.footer-col h3 {
   font-size: var(--fs-sm);
   font-weight: 700;
   text-transform: uppercase;

@@ -372,7 +372,7 @@ function footerHTML() {
         <p>AI-powered decision intelligence for career, learning, and financial choices.</p>
       </div>
       <div class="footer-col">
-        <h4>Categories</h4>
+        <h3>Categories</h3>
         <ul role="list">
           <li><a href="/career-decisions/">Career Decisions</a></li>
           <li><a href="/ai-and-jobs/">AI & Jobs</a></li>
@@ -382,7 +382,7 @@ function footerHTML() {
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Trust</h4>
+        <h3>Trust</h3>
         <ul role="list">
           <li><a href="/about.html">About</a></li>
           <li><a href="/how-scoring-works.html">How Scoring Works</a></li>
@@ -392,7 +392,7 @@ function footerHTML() {
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Legal</h4>
+        <h3>Legal</h3>
         <ul role="list">
           <li><a href="/disclaimer.html">Terms &amp; Disclaimer</a></li>
           <li><a href="/affiliate-disclosure/">Affiliate Disclosure</a></li>
@@ -442,9 +442,9 @@ function templateVariantHTML(d) {
     return `<section class="decision-section" aria-label="Conditional advice">
         <h2>If You're in This Situation, Do This</h2>
         <div class="scenarios-grid">
-          <div class="scenario-card"><h4>🎯 If you're early-career</h4><p>Focus on the "Who Should" criteria above. Your risk tolerance is higher and recovery time from a wrong move is shorter.</p></div>
-          <div class="scenario-card"><h4>🏠 If you have dependents</h4><p>Prioritize the financial factors in the scorecard. The "Realistic Case" scenario should be your planning baseline, not the best case.</p></div>
-          <div class="scenario-card"><h4>⏰ If you're on a deadline</h4><p>Skip straight to "Recommended Next Steps" and take the first action within 48 hours. Analysis paralysis is the biggest risk.</p></div>
+          <div class="scenario-card"><h3>🎯 If you're early-career</h3><p>Focus on the "Who Should" criteria above. Your risk tolerance is higher and recovery time from a wrong move is shorter.</p></div>
+          <div class="scenario-card"><h3>🏠 If you have dependents</h3><p>Prioritize the financial factors in the scorecard. The "Realistic Case" scenario should be your planning baseline, not the best case.</p></div>
+          <div class="scenario-card"><h3>⏰ If you're on a deadline</h3><p>Skip straight to "Recommended Next Steps" and take the first action within 48 hours. Analysis paralysis is the biggest risk.</p></div>
         </div>
       </section>`;
   }
@@ -520,7 +520,7 @@ function decisionPageHTML(d, allDecisions) {
       <!-- Audio Briefing -->
       <section class="decision-section" aria-label="Audio briefing">
         <div class="audio-player">
-          <h3>${ICONS.headphones} 3-Minute Audio Briefing</h3>
+          <h2 class="audio-title">${ICONS.headphones} 3-Minute Audio Briefing</h2>
           <p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary' : 'Audio coming soon — read the transcript below'}</p>
           ${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio>
           <div class="audio-controls">
@@ -612,7 +612,7 @@ function decisionPageHTML(d, allDecisions) {
       <section class="decision-section" aria-label="Realistic scenarios">
         <h2>3 Realistic Scenarios</h2>
         <div class="scenarios-grid">
-          ${d.scenarios.map(s => `<div class="scenario-card"><h4>${s.title}</h4><p>${esc(s.description)}</p></div>`).join('')}
+          ${d.scenarios.map(s => `<div class="scenario-card"><h3>${s.title}</h3><p>${esc(s.description)}</p></div>`).join('')}
         </div>
       </section>
 
@@ -631,7 +631,7 @@ function decisionPageHTML(d, allDecisions) {
       ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta affiliate-link" rel="sponsored nofollow noopener noreferrer" target="_blank" data-affiliate="true" data-slot="${slot}" data-merchant="${esc(merchant)}" data-page-path="/${d.slug}/" data-item-id="${d.slug}-${index + 1}" data-item-title="${esc(ns.action)}" aria-label="${esc(`Advertising link: ${merchant}. ${ns.affiliateLabel || 'View offer'}`)}">${esc(ns.affiliateLabel || 'View offer')} <span class="sr-only">(advertising link, opens in new tab)</span></a>`
       : '';
     return `<div class="next-step-card${isPrimary}">
-              <div class="next-step-info"><h4>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h4></div>
+              <div class="next-step-info"><h3>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h3></div>
               ${ctaHTML}
             </div>`;
   }).join('')}
@@ -667,7 +667,7 @@ function decisionPageHTML(d, allDecisions) {
         <h2>Related Decisions</h2>
         <div class="related-grid">
           ${related.map(r => `<a href="/${r.slug}/" class="related-card">
-            <h4>${esc(r.title)}</h4>
+            <h3>${esc(r.title)}</h3>
             <span class="related-verdict ${verdictTagClass(r.verdict)}">${r.verdict} · ${r.confidence}%</span>
           </a>`).join('')}
         </div>
@@ -756,6 +756,7 @@ function categoryPageHTML(catSlug, decisions, page, totalPages) {
     </section>
     <section class="section">
       <div class="container container--wide">
+        <h2 class="sr-only">${esc(cat.title)} decision guides</h2>
         <div class="decision-card-grid">
           ${decisions.map(d => {
     const cat = CATEGORIES[d.category] || { icon: 'fileText' };
@@ -1109,6 +1110,7 @@ function page404HTML() {
     noindex: true,
     content: `<div class="container" style="text-align:center; padding:var(--space-24) 0;">
       <h1 style="font-size:var(--fs-6xl); margin-bottom:var(--space-4);">404</h1>
+      <h2 class="sr-only">Page not found</h2>
       <p style="font-size:var(--fs-xl); color:var(--text-secondary); margin-bottom:var(--space-8);">This page doesn't exist — but your next decision does.</p>
       <a href="/" class="hero-cta">Go to Homepage →</a>
     </div>`
