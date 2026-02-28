@@ -15,6 +15,7 @@ const SITE_NAME = 'YourNextStep.ai';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 const ITEMS_PER_PAGE = 30;
 const ASSET_VERSION = String(Math.floor(Date.now() / 1000));
+const STRICT_SOURCE_URLS = process.env.STRICT_SOURCE_URLS === '1';
 
 function asset(pathname) {
   return `${pathname}?v=${ASSET_VERSION}`;
@@ -103,10 +104,90 @@ function daysSince(dateObj) {
   return Math.floor((now - dateObj) / (1000 * 60 * 60 * 24));
 }
 
+const SOURCE_REFERENCE_URLS = [
+  [/LinkedIn Global Talent Trends/i, 'https://business.linkedin.com/talent-solutions/resources/talent-acquisition/global-talent-trends'],
+  [/LinkedIn Workforce Report|LinkedIn Workforce|LinkedIn Economic Graph|AI Skills Demand/i, 'https://economicgraph.linkedin.com/'],
+  [/Stack Overflow Developer Survey/i, 'https://survey.stackoverflow.co/2025/'],
+  [/Computer and Information Research Scientists|Occupational Outlook for Computer and Information Research Scientists/i, 'https://www.bls.gov/ooh/computer-and-information-technology/computer-and-information-research-scientists.htm'],
+  [/Software Developer Outlook|Software Developer Employment Projections/i, 'https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm'],
+  [/Bureau of Labor Statistics: Occupational Outlook Handbook|Occupational Outlook Handbook/i, 'https://www.bls.gov/ooh/'],
+  [/Bureau of Labor Statistics: Worker Tenure|Worker Tenure Summary/i, 'https://www.bls.gov/news.release/tenure.nr0.htm'],
+  [/Bureau of Labor Statistics: Multiple Jobholders/i, 'https://www.bls.gov/cps/cpsaat36.htm'],
+  [/Management Occupations Outlook|MBA Employment Outcomes/i, 'https://www.bls.gov/ooh/management/home.htm'],
+  [/Self-employment and small business survival|Business Employment Dynamics/i, 'https://www.bls.gov/bdm/'],
+  [/Fastest Growing and Declining Occupations/i, 'https://www.bls.gov/ooh/fastest-growing.htm'],
+  [/McKinsey Global Institute: The State of AI|The State of AI in/i, 'https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai'],
+  [/Economic Potential of Generative AI|Generative AI and the Future of Work in America/i, 'https://www.mckinsey.com/mgi/our-research/generative-ai-and-the-future-of-work-in-america'],
+  [/Developer Productivity with AI-Assisted Coding Tools|AI-Assisted Coding Tools/i, 'https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai-the-next-productivity-frontier'],
+  [/Jobs Lost, Jobs Gained|Workforce Transitions in a Time of Automation/i, 'https://www.mckinsey.com/featured-insights/future-of-work/jobs-lost-jobs-gained-workforce-transitions-in-a-time-of-automation'],
+  [/Skill Shifts|Automation and the Future of the Workforce/i, 'https://www.mckinsey.com/featured-insights/future-of-work/skill-shift-automation-and-the-future-of-the-workforce'],
+  [/EU AI Act Official Text/i, 'https://eur-lex.europa.eu/eli/reg/2024/1689/oj'],
+  [/World Economic Forum: Future of Jobs Report 2025|Future of Jobs Report 2025/i, 'https://www.weforum.org/reports/the-future-of-jobs-report-2025/'],
+  [/OECD: Employment Outlook|OECD Employment Outlook/i, 'https://www.oecd.org/en/publications/oecd-employment-outlook_19991266.html'],
+  [/OECD: Employment Outlook 2025/i, 'https://www.oecd.org/en/publications/oecd-employment-outlook_19991266.html'],
+  [/OECD: AI and the Future of Skills|Skills for the Digital Transition/i, 'https://www.oecd.org/employment/skills-for-the-digital-transition.htm'],
+  [/Coursera: Global Skills Report|Coursera Global Skills Report/i, 'https://www.coursera.org/skills-reports/global'],
+  [/Stanford HAI: AI Index Report|AI Index Report 2025/i, 'https://hai.stanford.edu/ai-index'],
+  [/TIOBE Programming Index/i, 'https://www.tiobe.com/tiobe-index/'],
+  [/GitHub Octoverse|State of the Octoverse/i, 'https://octoverse.github.com/'],
+  [/Harvard CS50/i, 'https://cs50.harvard.edu/'],
+  [/SPIVA U\\.S\\. Scorecard|SPIVA/i, 'https://www.spglobal.com/spdji/en/spiva/article/us-spiva-scorecard/'],
+  [/Vanguard Research: The Case for Index Funds|Case for Low-Cost Index Funds/i, 'https://investor.vanguard.com/investor-resources-education/understanding-investment-types/what-is-an-index-fund'],
+  [/Morningstar: US Fund Fee Study/i, 'https://www.morningstar.com/lp/us-fund-fee-study'],
+  [/FRED|S&P 500 Historical Returns/i, 'https://fred.stlouisfed.org/series/SP500'],
+  [/A Random Walk Down Wall Street/i, 'https://wwnorton.com/books/9781324035435'],
+  [/YouTube Creator Academy|Monetization Guidelines/i, 'https://support.google.com/youtube/answer/72857'],
+  [/Social Blade/i, 'https://socialblade.com/'],
+  [/Oxford Economics: The YouTube Economic Impact Report/i, 'https://www.oxfordeconomics.com/resource/the-economic-social-and-cultural-impact-of-youtube/'],
+  [/Influencer Marketing Hub: YouTube Revenue Calculator/i, 'https://influencermarketinghub.com/youtube-money-calculator/'],
+  [/Think Media/i, 'https://www.thinkmedia.co/'],
+  [/Financial Times Global MBA Ranking/i, 'https://rankings.ft.com/rankings/2951/mba-2025'],
+  [/Graduate Management Admission Council|Application Trends Survey/i, 'https://www.gmac.com/market-intelligence-and-research/research-library/admissions-and-application-trends'],
+  [/US News: Best Business Schools/i, 'https://www.usnews.com/best-graduate-schools/top-business-schools/mba-rankings'],
+  [/Poets & Quants: MBA Return on Investment/i, 'https://poetsandquants.com/'],
+  [/Harvard Business Review/i, 'https://hbr.org/'],
+  [/AARP: Age Discrimination/i, 'https://www.aarp.org/work/working-at-50-plus/info-2018/age-discrimination-survey.html'],
+  [/Gallup: State of the Global Workplace/i, 'https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx'],
+  [/Gallup: State of the American Manager/i, 'https://www.gallup.com/workplace/236441/state-american-workplace-report.aspx'],
+  [/US Census Bureau: Nonemployer Statistics/i, 'https://www.census.gov/programs-surveys/nonemployer-statistics.html'],
+  [/Bankrate Side Hustle Survey/i, 'https://www.bankrate.com/personal-finance/side-hustles-survey/'],
+  [/IRS Self-Employment Tax Guidelines/i, 'https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes'],
+  [/Federal Reserve: Consumer Credit Report/i, 'https://www.federalreserve.gov/releases/g19/'],
+  [/National Foundation for Credit Counseling|NFCC/i, 'https://www.nfcc.org/resources/financial-literacy-survey/'],
+  [/IRS Publication 970/i, 'https://www.irs.gov/forms-pubs/about-publication-970'],
+  [/I Will Teach You to Be Rich/i, 'https://www.penguinrandomhouse.com/books/539238/i-will-teach-you-to-be-rich-second-edition-by-ramit-sethi/'],
+  [/Statista: Global E-commerce/i, 'https://www.statista.com/topics/871/online-shopping/'],
+  [/Shopify: The State of Commerce|Shopify: Commerce Trends|State of Dropshipping/i, 'https://www.shopify.com/enterprise/the-future-of-commerce'],
+  [/Forbes: Why 90% of E-commerce Startups Fail/i, 'https://www.forbes.com/'],
+  [/Google Trends/i, 'https://trends.google.com/trends/'],
+  [/Oberlo:/i, 'https://www.shopify.com/blog/dropshipping'],
+  [/Facebook Business: Average CPM and CPC benchmarks/i, 'https://www.facebook.com/business/help'],
+  [/eMarketer/i, 'https://www.emarketer.com/'],
+  [/Consumer Reports: Online Shopping Delivery Expectations/i, 'https://www.consumerreports.org/'],
+  [/Litmus: Email Marketing ROI Report/i, 'https://www.litmus.com/resources/state-of-email'],
+  [/BigCommerce: State of Small Business E-commerce/i, 'https://www.bigcommerce.com/blog/'],
+  [/Pew Research Center: Public Attitudes Toward AI/i, 'https://www.pewresearch.org/topic/science/artificial-intelligence/'],
+  [/Rands Leadership Slack Community/i, 'https://randsinrepose.com/welcome-to-rands-leadership-slack/'],
+  [/The Manager's Path/i, 'https://www.oreilly.com/library/view/the-managers-path/9781491973882/']
+];
+
+function inferSourceUrl(sourceText) {
+  const text = String(sourceText || '').trim();
+  if (!text) return '';
+  for (const [pattern, url] of SOURCE_REFERENCE_URLS) {
+    if (pattern.test(text)) return url;
+  }
+  return '';
+}
+
 function sourceUrlFromEntry(source) {
   if (!source) return '';
   if (typeof source === 'object' && source.url && /^https?:\/\//i.test(String(source.url).trim())) {
     return String(source.url).trim();
+  }
+  if (typeof source === 'object') {
+    const label = source.title || source.label || source.name || '';
+    return inferSourceUrl(label);
   }
   if (typeof source !== 'string') return '';
   const s = source.trim();
@@ -114,7 +195,8 @@ function sourceUrlFromEntry(source) {
   const markdownMatch = s.match(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/i);
   if (markdownMatch) return markdownMatch[1];
   const inlineUrlMatch = s.match(/https?:\/\/[^\s)]+/i);
-  return inlineUrlMatch ? inlineUrlMatch[0] : '';
+  if (inlineUrlMatch) return inlineUrlMatch[0];
+  return inferSourceUrl(s);
 }
 
 // ─── QA Gate (strict thresholds for scale) ──────────────────
@@ -159,7 +241,17 @@ function qaCheck(d) {
   const sourcesCount = (d.sources || []).length;
   if (sourcesCount < 4) warnings.push(`sources has ${sourcesCount} items (recommended min 4)`);
   const urlLikeSources = (d.sources || []).filter((s) => !!sourceUrlFromEntry(s)).length;
-  if (urlLikeSources < 1) warnings.push('sources contain no direct source URLs');
+  const sourcesMissingUrl = sourcesCount - urlLikeSources;
+  if (urlLikeSources < 1) {
+    warnings.push('sources contain no direct source URLs');
+    if (STRICT_SOURCE_URLS) errors.push('STRICT_SOURCE_URLS=1 blocked page: no verifiable source URLs');
+  }
+  if (sourcesMissingUrl > 0) {
+    warnings.push(`sources missing verifiable URL: ${sourcesMissingUrl}/${sourcesCount}`);
+    if (STRICT_SOURCE_URLS) {
+      errors.push(`STRICT_SOURCE_URLS=1 blocked page: ${sourcesMissingUrl}/${sourcesCount} sources missing URL`);
+    }
+  }
 
   // Affiliate count guard (hard rule: max 3)
   const affiliateCount = (d.nextSteps || []).filter(ns => ns.affiliateUrl).length;
