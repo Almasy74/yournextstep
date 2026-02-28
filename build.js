@@ -105,7 +105,6 @@ function daysSince(dateObj) {
 }
 
 const SOURCE_REFERENCE_URLS = [
-  [/LinkedIn Global Talent Trends/i, 'https://business.linkedin.com/talent-solutions/resources/talent-acquisition/global-talent-trends'],
   [/LinkedIn Workforce Report|LinkedIn Workforce|LinkedIn Economic Graph|AI Skills Demand/i, 'https://economicgraph.linkedin.com/'],
   [/Stack Overflow Developer Survey/i, 'https://survey.stackoverflow.co/2025/'],
   [/Computer and Information Research Scientists|Occupational Outlook for Computer and Information Research Scientists/i, 'https://www.bls.gov/ooh/computer-and-information-technology/computer-and-information-research-scientists.htm'],
@@ -131,14 +130,13 @@ const SOURCE_REFERENCE_URLS = [
   [/TIOBE Programming Index/i, 'https://www.tiobe.com/tiobe-index/'],
   [/GitHub Octoverse|State of the Octoverse/i, 'https://octoverse.github.com/'],
   [/Harvard CS50/i, 'https://cs50.harvard.edu/'],
-  [/SPIVA U\\.S\\. Scorecard|SPIVA/i, 'https://www.spglobal.com/spdji/en/spiva/article/us-spiva-scorecard/'],
+  [/SPIVA U\\.S\\. Scorecard|SPIVA/i, 'https://www.spglobal.com/spdji/en/research-insights/spiva/about-spiva/'],
   [/Vanguard Research: The Case for Index Funds|Case for Low-Cost Index Funds/i, 'https://investor.vanguard.com/investor-resources-education/understanding-investment-types/what-is-an-index-fund'],
   [/Morningstar: US Fund Fee Study/i, 'https://www.morningstar.com/lp/us-fund-fee-study'],
   [/FRED|S&P 500 Historical Returns/i, 'https://fred.stlouisfed.org/series/SP500'],
   [/A Random Walk Down Wall Street/i, 'https://wwnorton.com/books/9781324035435'],
   [/YouTube Creator Academy|Monetization Guidelines/i, 'https://support.google.com/youtube/answer/72857'],
   [/Social Blade/i, 'https://socialblade.com/'],
-  [/Oxford Economics: The YouTube Economic Impact Report/i, 'https://www.oxfordeconomics.com/resource/the-economic-social-and-cultural-impact-of-youtube/'],
   [/Influencer Marketing Hub: YouTube Revenue Calculator/i, 'https://influencermarketinghub.com/youtube-money-calculator/'],
   [/Think Media/i, 'https://www.thinkmedia.co/'],
   [/Financial Times Global MBA Ranking/i, 'https://rankings.ft.com/rankings/2951/mba-2025'],
@@ -146,14 +144,14 @@ const SOURCE_REFERENCE_URLS = [
   [/US News: Best Business Schools/i, 'https://www.usnews.com/best-graduate-schools/top-business-schools/mba-rankings'],
   [/Poets & Quants: MBA Return on Investment/i, 'https://poetsandquants.com/'],
   [/Harvard Business Review/i, 'https://hbr.org/'],
-  [/AARP: Age Discrimination/i, 'https://www.aarp.org/work/working-at-50-plus/info-2018/age-discrimination-survey.html'],
+  [/AARP: Age Discrimination/i, 'https://www.aarp.org/pri/topics/work-finances-retirement/employers-workforce/age-discrimination-workplace/'],
   [/Gallup: State of the Global Workplace/i, 'https://www.gallup.com/workplace/349484/state-of-the-global-workplace.aspx'],
   [/Gallup: State of the American Manager/i, 'https://www.gallup.com/workplace/236441/state-american-workplace-report.aspx'],
   [/US Census Bureau: Nonemployer Statistics/i, 'https://www.census.gov/programs-surveys/nonemployer-statistics.html'],
   [/Bankrate Side Hustle Survey/i, 'https://www.bankrate.com/personal-finance/side-hustles-survey/'],
   [/IRS Self-Employment Tax Guidelines/i, 'https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes'],
   [/Federal Reserve: Consumer Credit Report/i, 'https://www.federalreserve.gov/releases/g19/'],
-  [/National Foundation for Credit Counseling|NFCC/i, 'https://www.nfcc.org/resources/financial-literacy-survey/'],
+  [/National Foundation for Credit Counseling|NFCC/i, 'https://www.nfcc.org/harrispoll/'],
   [/IRS Publication 970/i, 'https://www.irs.gov/forms-pubs/about-publication-970'],
   [/I Will Teach You to Be Rich/i, 'https://www.penguinrandomhouse.com/books/539238/i-will-teach-you-to-be-rich-second-edition-by-ramit-sethi/'],
   [/Statista: Global E-commerce/i, 'https://www.statista.com/topics/871/online-shopping/'],
@@ -171,6 +169,24 @@ const SOURCE_REFERENCE_URLS = [
   [/The Manager's Path/i, 'https://www.oreilly.com/library/view/the-managers-path/9781491973882/']
 ];
 
+const SOURCE_URL_FIXUPS = [
+  [/^https?:\/\/www\.spglobal\.com\/spdji\/en\/spiva\/article\/us-spiva-scorecard\/?$/i, 'https://www.spglobal.com/spdji/en/research-insights/spiva/about-spiva/'],
+  [/^https?:\/\/www\.linkedin\.com\/business\/talent\/blog\/talent-strategy\/skills-based-hiring\/?$/i, 'https://business.linkedin.com/hire/resources/talent-acquisition/adopting-skills-based-hiring'],
+  [/^https?:\/\/www\.aarp\.org\/work\/working-at-50-plus\/info-2018\/age-discrimination-survey\.html\/?$/i, 'https://www.aarp.org/pri/topics/work-finances-retirement/employers-workforce/age-discrimination-workplace/'],
+  [/^https?:\/\/www\.nfcc\.org\/resources\/financial-literacy-survey\/?$/i, 'https://www.nfcc.org/harrispoll/'],
+  [/^https?:\/\/www\.nerdwallet\.com\/article\/finance\/emergency-fund-why-it-matters\/?$/i, 'https://www.nerdwallet.com/article/banking/emergency-fund-why-it-matters'],
+  [/^https?:\/\/www\.nerdwallet\.com\/article\/finance\/passive-income-ideas\/?$/i, 'https://www.nerdwallet.com/investing/learn/what-is-passive-income-and-how-do-i-earn-it']
+];
+
+function normalizeSourceUrl(url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  for (const [pattern, replacement] of SOURCE_URL_FIXUPS) {
+    if (pattern.test(raw)) return replacement;
+  }
+  return raw;
+}
+
 function inferSourceUrl(sourceText) {
   const text = String(sourceText || '').trim();
   if (!text) return '';
@@ -183,7 +199,7 @@ function inferSourceUrl(sourceText) {
 function sourceUrlFromEntry(source) {
   if (!source) return '';
   if (typeof source === 'object' && source.url && /^https?:\/\//i.test(String(source.url).trim())) {
-    return String(source.url).trim();
+    return normalizeSourceUrl(String(source.url).trim());
   }
   if (typeof source === 'object') {
     const label = source.title || source.label || source.name || '';
@@ -191,12 +207,12 @@ function sourceUrlFromEntry(source) {
   }
   if (typeof source !== 'string') return '';
   const s = source.trim();
-  if (/^https?:\/\//i.test(s)) return s;
+  if (/^https?:\/\//i.test(s)) return normalizeSourceUrl(s);
   const markdownMatch = s.match(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/i);
-  if (markdownMatch) return markdownMatch[1];
+  if (markdownMatch) return normalizeSourceUrl(markdownMatch[1]);
   const inlineUrlMatch = s.match(/https?:\/\/[^\s)]+/i);
-  if (inlineUrlMatch) return inlineUrlMatch[0];
-  return inferSourceUrl(s);
+  if (inlineUrlMatch) return normalizeSourceUrl(inlineUrlMatch[0]);
+  return normalizeSourceUrl(inferSourceUrl(s));
 }
 
 // ─── QA Gate (strict thresholds for scale) ──────────────────
