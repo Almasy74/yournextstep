@@ -1440,7 +1440,7 @@ a:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
   margin-bottom: var(--space-4);
 }
 
@@ -1494,9 +1494,11 @@ a:hover {
 
 .audio-time {
   margin-left: calc(48px + var(--space-4));
+  margin-top: -1px;
   display: flex;
   justify-content: space-between;
   font-size: var(--fs-xs);
+  line-height: 1;
   color: var(--text-muted);
   font-family: var(--font-mono);
 }
