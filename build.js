@@ -555,28 +555,28 @@ function decisionPageHTML(d, allDecisions) {
       <!-- Decision Scorecard -->
       <section class="decision-section" aria-label="Decision scorecard">
         <h2>Decision Scorecard</h2>
-        <div class="scorecard">
-          <div class="scorecard-header">
-            <span class="scorecard-col-factor">Factor</span>
-            <span class="scorecard-col-weight">Weight</span>
-            <span class="scorecard-col-score">Score</span>
-            <span class="scorecard-col-weighted">Weighted</span>
+        <div class="scorecard" role="table" aria-label="Decision scorecard table">
+          <div class="scorecard-header" role="row">
+            <span class="scorecard-col-factor" role="columnheader">Factor</span>
+            <span class="scorecard-col-weight" role="columnheader">Weight</span>
+            <span class="scorecard-col-score" role="columnheader">Score</span>
+            <span class="scorecard-col-weighted" role="columnheader">Weighted</span>
           </div>
           ${d.scorecard.map(row => {
     const weighted = row.weight * row.score;
     const maxW = row.weight * 10;
     const pct = Math.round((weighted / maxW) * 100);
-    return `<div class="scorecard-row">
-              <span class="scorecard-cell scorecard-cell-factor" data-label="Factor">${esc(row.factor)}</span>
-              <span class="scorecard-cell scorecard-cell-weight" data-label="Weight">${row.weight}/10</span>
-              <span class="scorecard-cell scorecard-cell-score" data-label="Score">${row.score}/10</span>
-              <span class="scorecard-cell scorecard-cell-weighted" data-label="Weighted">
+    return `<div class="scorecard-row" role="row">
+              <span class="scorecard-cell scorecard-cell-factor" data-label="Factor" role="cell">${esc(row.factor)}</span>
+              <span class="scorecard-cell scorecard-cell-weight" data-label="Weight" role="cell">${row.weight}/10</span>
+              <span class="scorecard-cell scorecard-cell-score" data-label="Score" role="cell">${row.score}/10</span>
+              <span class="scorecard-cell scorecard-cell-weighted" data-label="Weighted" role="cell">
                 <span class="scorecard-weighted-value">${weighted}/${maxW}</span>
                 <div class="scorecard-bar"><div class="scorecard-bar-fill" style="width:${pct}%"></div></div>
               </span>
             </div>`;
   }).join('')}
-          <div class="scorecard-total">
+          <div class="scorecard-total" role="row">
             <span>Overall Score</span>
             <span>${overallPct}% (${weightedScore}/${maxWeightedScore})</span>
           </div>
