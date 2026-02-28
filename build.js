@@ -103,6 +103,20 @@ function daysSince(dateObj) {
   return Math.floor((now - dateObj) / (1000 * 60 * 60 * 24));
 }
 
+function sourceUrlFromEntry(source) {
+  if (!source) return '';
+  if (typeof source === 'object' && source.url && /^https?:\/\//i.test(String(source.url).trim())) {
+    return String(source.url).trim();
+  }
+  if (typeof source !== 'string') return '';
+  const s = source.trim();
+  if (/^https?:\/\//i.test(s)) return s;
+  const markdownMatch = s.match(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/i);
+  if (markdownMatch) return markdownMatch[1];
+  const inlineUrlMatch = s.match(/https?:\/\/[^\s)]+/i);
+  return inlineUrlMatch ? inlineUrlMatch[0] : '';
+}
+
 // ─── QA Gate (strict thresholds for scale) ──────────────────
 function qaCheck(d) {
   const errors = [];
@@ -144,7 +158,7 @@ function qaCheck(d) {
 
   const sourcesCount = (d.sources || []).length;
   if (sourcesCount < 4) warnings.push(`sources has ${sourcesCount} items (recommended min 4)`);
-  const urlLikeSources = (d.sources || []).filter((s) => /^https?:\/\//i.test(String(s).trim())).length;
+  const urlLikeSources = (d.sources || []).filter((s) => !!sourceUrlFromEntry(s)).length;
   if (urlLikeSources < 1) warnings.push('sources contain no direct source URLs');
 
   // Affiliate count guard (hard rule: max 3)
@@ -174,6 +188,37 @@ function resolveRelatedSlugs(d, allPublished) {
 
 // ─── HTML Helpers ───────────────────────────────────────────
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function renderSourceItem(source) {
+  if (!source) return '';
+  if (typeof source === 'object') {
+    const label = source.title || source.label || source.name || source.url || '';
+    const url = sourceUrlFromEntry(source);
+    if (url) {
+      return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label || url)}</a>`;
+    }
+    return esc(label);
+  }
+
+  const text = String(source).trim();
+  const url = sourceUrlFromEntry(text);
+  if (!url) return esc(text);
+
+  if (text === url) {
+    return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+  }
+
+  const markdownLabelMatch = text.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/i);
+  if (markdownLabelMatch) {
+    return `<a href="${esc(markdownLabelMatch[2])}" target="_blank" rel="noopener noreferrer">${esc(markdownLabelMatch[1])}</a>`;
+  }
+
+  const label = text.replace(url, '').replace(/[-–—:\s]+$/, '').trim();
+  if (label) {
+    return `${esc(label)} — <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+  }
+  return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+}
 
 function verdictClass(v) {
   if (v === 'Yes') return 'verdict-yes';
@@ -658,7 +703,7 @@ function decisionPageHTML(d, allDecisions) {
       <section class="decision-section" aria-label="Sources">
         <h2>Sources & Assumptions</h2>
         <ol class="sources-list">
-          ${d.sources.map(s => `<li>${esc(s)}</li>`).join('')}
+          ${d.sources.map(s => `<li>${renderSourceItem(s)}</li>`).join('')}
         </ol>
       </section>
 
