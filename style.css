@@ -1252,6 +1252,24 @@ a:hover {
   line-height: 1.6;
 }
 
+/* Common Mistakes variant: center text relative to numeric marker only here */
+.risk-list--mistakes .risk-card--mistake {
+  align-items: center;
+}
+
+.risk-list--mistakes .risk-card--mistake .risk-icon--index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-top: 0;
+  min-width: 1.2em;
+}
+
+.risk-list--mistakes .risk-card--mistake p {
+  margin: 0;
+}
+
 /* --- Scenarios --- */
 .scenarios-grid {
   display: grid;

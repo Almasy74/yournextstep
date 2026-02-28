@@ -476,10 +476,10 @@ function templateVariantHTML(d) {
     // Variant B: Common mistakes block
     return `<section class="decision-section" aria-label="Common mistakes">
         <h2>Common Mistakes People Make</h2>
-        <div class="risk-list">
-          <div class="risk-card"><span class="risk-icon" aria-hidden="true">1</span><p>Deciding purely on emotion without weighing the factors above. Use the scorecard before committing.</p></div>
-          <div class="risk-card"><span class="risk-icon" aria-hidden="true">2</span><p>Ignoring the "worst case" scenario. If you can't survive it, the decision carries more risk than you think.</p></div>
-          <div class="risk-card"><span class="risk-icon" aria-hidden="true">3</span><p>Skipping the "who should NOT" section. The best decisions start by eliminating bad fits.</p></div>
+        <div class="risk-list risk-list--mistakes">
+          <div class="risk-card risk-card--mistake"><span class="risk-icon risk-icon--index" aria-hidden="true">1</span><p>Deciding purely on emotion without weighing the factors above. Use the scorecard before committing.</p></div>
+          <div class="risk-card risk-card--mistake"><span class="risk-icon risk-icon--index" aria-hidden="true">2</span><p>Ignoring the "worst case" scenario. If you can't survive it, the decision carries more risk than you think.</p></div>
+          <div class="risk-card risk-card--mistake"><span class="risk-icon risk-icon--index" aria-hidden="true">3</span><p>Skipping the "who should NOT" section. The best decisions start by eliminating bad fits.</p></div>
         </div>
       </section>`;
   } else {
