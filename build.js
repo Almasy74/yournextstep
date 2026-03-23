@@ -52,6 +52,120 @@ const CATEGORIES = {
   'side-hustles': { title: 'Side Hustles', icon: 'rocket', description: 'Assess side income opportunities with realistic timelines and tradeoffs.' }
 };
 
+const HOME_FEATURED_SLUGS = [
+  'should-i-use-ai-to-write-work-reports',
+  'should-i-learn-ai-in-2026',
+  'should-i-learn-coding-in-the-ai-era',
+  'should-i-invest-in-index-funds',
+  'should-i-build-an-emergency-fund-before-investing',
+  'should-i-start-an-online-business'
+];
+
+const HOME_SECONDARY_SLUGS = [
+  'should-i-pay-off-debt-or-invest',
+  'should-i-learn-python-in-2026',
+  'should-i-start-a-side-hustle-while-employed',
+  'should-i-switch-careers-at-40'
+];
+
+const CATEGORY_HUBS = {
+  'career-decisions': {
+    summary: 'This cluster focuses on higher-stakes job choices: whether to change roles, leave, level up, or reposition your career without making an emotional decision in a stressful moment.',
+    audience: 'Best for professionals weighing career moves with real tradeoffs around income, timing, health, and long-term upside.',
+    startHere: [
+      'should-i-switch-careers-at-40',
+      'should-i-quit-my-job-without-another-lined-up',
+      'should-i-become-a-manager'
+    ],
+    questions: [
+      'Should you leave because the role is wrong, or because the current environment is bad?',
+      'How much savings runway do you need before making a career move?',
+      'Which option gives you stronger future leverage: title, skills, or stability?'
+    ],
+    framework: [
+      'Separate temporary frustration from structural career mismatch.',
+      'Model downside first: income gap, search time, and health impact.',
+      'Prefer reversible tests before irreversible moves whenever possible.'
+    ]
+  },
+  'ai-and-jobs': {
+    summary: 'This is the site\'s primary authority cluster: practical guidance on how AI changes knowledge work, reporting, employability, and job risk.',
+    audience: 'Best for professionals deciding how to use AI at work, how much to worry, and which adjustments actually improve career resilience.',
+    startHere: [
+      'should-i-use-ai-to-write-work-reports',
+      'should-i-worry-my-job-will-be-automated',
+      'which-jobs-are-safest-from-ai'
+    ],
+    questions: [
+      'Which parts of your job are safe to automate, and which are reputation-sensitive?',
+      'What AI usage creates leverage versus visible career risk?',
+      'How should you adapt when your role changes faster than your company policy?'
+    ],
+    framework: [
+      'Optimize for trust, policy compliance, and retained human judgment.',
+      'Use AI first where work is structured, repetitive, and easily checked.',
+      'Keep building non-commodity skills: judgment, communication, and domain context.'
+    ]
+  },
+  'learning': {
+    summary: 'These guides help you choose what to learn next without getting trapped by hype, credential inflation, or expensive but low-signal courses.',
+    audience: 'Best for professionals choosing skills, courses, certifications, and technical paths in the AI era.',
+    startHere: [
+      'should-i-learn-ai-in-2026',
+      'should-i-learn-python-in-2026',
+      'should-i-learn-coding-in-the-ai-era'
+    ],
+    questions: [
+      'Which skill has real market demand versus attention-driven hype?',
+      'Should you buy structure with a course, or learn by projects and practice?',
+      'How do you sequence foundational skills before advanced ones?'
+    ],
+    framework: [
+      'Choose for market utility, not prestige alone.',
+      'Prefer skills that compound into adjacent opportunities.',
+      'Measure learning plans by output: projects, portfolio, and better decisions.'
+    ]
+  },
+  'money-decisions': {
+    summary: 'Money guides are framed as educational decision support, not personal financial advice. The focus is sequencing, risk management, and behavioral durability.',
+    audience: 'Best for readers deciding what to do first with limited capital: build reserves, invest, pay down debt, or choose between competing paths.',
+    startHere: [
+      'should-i-build-an-emergency-fund-before-investing',
+      'should-i-invest-in-index-funds',
+      'should-i-pay-off-debt-or-invest'
+    ],
+    questions: [
+      'What should come first when you cannot optimize every financial goal at once?',
+      'Which decision lowers the chance of forced mistakes later?',
+      'How does your time horizon change whether cash, debt payoff, or investing wins?'
+    ],
+    framework: [
+      'Protect liquidity before chasing return where shocks can force bad behavior.',
+      'Use sequencing rules, not one-size-fits-all absolutes.',
+      'Treat every money guide here as educational framing, not personal advice.'
+    ]
+  },
+  'side-hustles': {
+    summary: 'This cluster is intentionally secondary. We cover side hustles where decision quality matters more than internet hype, especially around time-to-income and execution risk.',
+    audience: 'Best for readers comparing realistic side-income options and filtering out low-quality business models.',
+    startHere: [
+      'best-side-hustles-for-2026-ranked-by-time-money-and-skill',
+      'how-to-start-a-side-hustle-with-no-money',
+      'side-hustle-ideas-for-introverts-that-actually-pay'
+    ],
+    questions: [
+      'How long until a side hustle becomes meaningful income?',
+      'Which model fits your constraints: time, skill, capital, or personality?',
+      'What do most side-hustle articles ignore about failure rate and friction?'
+    ],
+    framework: [
+      'Bias toward models with clear demand and low cash burn.',
+      'Start with validation before tools, branding, or complexity.',
+      'Use side hustles to test fit, not to assume passive income.'
+    ]
+  }
+};
+
 // ─── Schema Normalization ───────────────────────────────────
 // Ensures every entry has safe defaults for optional fields
 function normalizeEntry(d) {
@@ -102,6 +216,103 @@ function parseISODate(value) {
 function daysSince(dateObj) {
   const now = new Date();
   return Math.floor((now - dateObj) / (1000 * 60 * 60 * 24));
+}
+
+function formatDateHuman(value) {
+  const date = parseISODate(value);
+  if (!date) return String(value || '');
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC'
+  });
+}
+
+function humanIntentLabel(intent) {
+  const labels = {
+    'career-service': 'Career decision support',
+    'course-affiliate': 'Learning and skills decision support',
+    'tool-affiliate': 'Tool and money decision support',
+    'general': 'Decision support'
+  };
+  return labels[intent] || 'Decision support';
+}
+
+function pickDecisionsBySlug(allDecisions, slugs) {
+  return (slugs || [])
+    .map((slug) => allDecisions.find((entry) => entry.slug === slug))
+    .filter(Boolean);
+}
+
+function rankedScoreFactors(d) {
+  return [...(d.scorecard || [])]
+    .map((row) => ({ ...row, weighted: row.weight * row.score }))
+    .sort((a, b) => b.weighted - a.weighted);
+}
+
+function strongestFactors(d, count = 3) {
+  return rankedScoreFactors(d).slice(0, count);
+}
+
+function weakestFactors(d, count = 3) {
+  return rankedScoreFactors(d).slice(-count).reverse();
+}
+
+function decisionMeta(d) {
+  return {
+    title: d.seoTitle || d.title,
+    description: d.seoDescription || d.metaDescription,
+    h1: d.h1 || d.title,
+    standfirst: d.standfirst || d.metaDescription
+  };
+}
+
+function decisionQuickAnswer(d) {
+  if (d.quickAnswer) return d.quickAnswer;
+  const strongest = strongestFactors(d, 1)[0];
+  const weakest = weakestFactors(d, 1)[0];
+  if (d.verdict === 'Yes') {
+    return `Usually yes. The strongest reason is ${strongest ? strongest.factor.toLowerCase() : 'the overall upside'}, but the decision gets weaker when ${weakest ? weakest.factor.toLowerCase() : 'your constraints'} becomes the limiting factor.`;
+  }
+  if (d.verdict === 'No') {
+    return `Usually no. The upside is not strong enough to offset the downside, especially around ${weakest ? weakest.factor.toLowerCase() : 'execution risk'} and fit.`;
+  }
+  return `It depends. ${strongest ? strongest.factor : 'The biggest upside'} drives the case for action, but ${weakest ? weakest.factor.toLowerCase() : 'your personal constraints'} is what usually changes the answer.`;
+}
+
+function decisionBottomLine(d) {
+  if (d.bottomLine) return d.bottomLine;
+  if (d.verdict === 'Yes') {
+    return 'Take the next step only if you can execute it consistently and the downside does not force bad behavior later.';
+  }
+  if (d.verdict === 'No') {
+    return 'Protect downside first, then revisit the decision when the main blockers have changed.';
+  }
+  return 'Treat this as a sequencing decision, not a binary identity decision. The right answer depends on timing, constraints, and what you can sustain.';
+}
+
+function decisionChangesIf(d) {
+  if (Array.isArray(d.answerChangesIf) && d.answerChangesIf.length > 0) return d.answerChangesIf;
+  return weakestFactors(d, 3).map((row) => `${row.factor} becomes the deciding constraint.`);
+}
+
+function decisionEvidence(d) {
+  if (Array.isArray(d.keyEvidence) && d.keyEvidence.length > 0) return d.keyEvidence;
+  const strongest = strongestFactors(d, 3);
+  if (strongest.length > 0) {
+    return strongest.map((row) => `${row.factor} is one of the strongest drivers in this guide, scoring ${row.score}/10 with a weight of ${row.weight}/10.`);
+  }
+  return ['This guide is based on the weighted scorecard, cited sources, and explicit downside scenarios shown below.'];
+}
+
+function decisionMistakes(d) {
+  if (Array.isArray(d.commonMistakes) && d.commonMistakes.length > 0) return d.commonMistakes;
+  const mistakes = [];
+  if (d.whoShouldNot && d.whoShouldNot[0]) mistakes.push(`Ignoring obvious bad-fit conditions such as: ${d.whoShouldNot[0]}`);
+  mistakes.push('Treating the best-case scenario as the base case instead of planning around the realistic case.');
+  if (d.risksUnderestimated && d.risksUnderestimated[0]) mistakes.push(`Underestimating the main hidden risk: ${d.risksUnderestimated[0]}`);
+  return mistakes.slice(0, 3);
 }
 
 const SOURCE_REFERENCE_URLS = [
@@ -409,7 +620,7 @@ function jsonLD_Article(d) {
     '@id': `${SITE_URL}/${d.slug}/#article`,
     'mainEntityOfPage': `${SITE_URL}/${d.slug}/`,
     'headline': d.title,
-    'description': d.metaDescription,
+    'description': decisionMeta(d).description,
     'datePublished': d.publishedDate,
     'dateModified': d.updatedDate,
     'author': { '@type': 'Organization', 'name': SITE_NAME },
@@ -421,7 +632,9 @@ function jsonLD_Article(d) {
         'url': `${SITE_URL}/favicon.svg`
       }
     },
-    'image': DEFAULT_OG_IMAGE
+    'image': DEFAULT_OG_IMAGE,
+    'articleSection': (CATEGORIES[d.category] || {}).title || d.category,
+    'inLanguage': 'en'
   });
 }
 
@@ -460,9 +673,43 @@ function jsonLD_WebSite() {
   });
 }
 
+function jsonLD_WebPage({ type = 'WebPage', name, description, url }) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': type,
+    'name': name,
+    'description': description,
+    'url': url,
+    'isPartOf': { '@id': `${SITE_URL}/#website` },
+    'inLanguage': 'en'
+  });
+}
+
+function jsonLD_CollectionPage({ name, description, url, items }) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': name,
+    'description': description,
+    'url': url,
+    'isPartOf': { '@id': `${SITE_URL}/#website` },
+    'mainEntity': {
+      '@type': 'ItemList',
+      'itemListElement': (items || []).map((item, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'url': `${SITE_URL}/${item.slug}/`,
+        'name': item.title
+      }))
+    }
+  });
+}
+
 // ─── Shell: wraps every page ────────────────────────────────
 function shell({ title, description, canonical, bodyClass, content, noindex, jsonLdBlocks, ogType, ogImage, twitterCard }) {
-  const robotsMeta = noindex ? '<meta name="robots" content="noindex, nofollow">' : '';
+  const robotsMeta = noindex
+    ? '<meta name="robots" content="noindex, nofollow">'
+    : '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">';
   const mergedJsonLdBlocks = [jsonLD_Organization(), jsonLD_WebSite(), ...(jsonLdBlocks || [])];
   const jsonLd = mergedJsonLdBlocks.map(j => `<script type="application/ld+json">${j}</script>`).join('\n');
   const resolvedOgType = ogType || 'website';
@@ -504,7 +751,7 @@ function shell({ title, description, canonical, bodyClass, content, noindex, jso
     ${content}
   </main>
   ${footerHTML()}
-  <script src="${asset('/script.js')}"></script>
+  <script src="${asset('/script.js')}" defer></script>
 </body>
 </html>`;
 }
@@ -525,13 +772,13 @@ function navHTML() {
 
       <nav id="main-nav">
         <ul class="nav-links" role="list">
-          <li><a href="/career-decisions/">Career</a></li>
           <li><a href="/ai-and-jobs/">AI & Jobs</a></li>
+          <li><a href="/career-decisions/">Career</a></li>
           <li><a href="/learning/">Learning</a></li>
           <li><a href="/money-decisions/">Money</a></li>
-          <li><a href="/side-hustles/">Side Hustles</a></li>
           <li><a href="/best-of/">Best Of</a></li>
-          <li><a href="/about.html">About</a></li>
+          <li><a href="/how-we-evaluate-decisions/">Method</a></li>
+          <li><a href="/about/">About</a></li>
         </ul>
       </nav>
     </div>
@@ -558,38 +805,38 @@ function footerHTML() {
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="/" class="logo">YourNextStep<span>.ai</span></a>
-        <p>AI-powered decision intelligence for career, learning, and financial choices.</p>
+        <p>Editorial decision guides for AI-era work, learning, and money choices.</p>
       </div>
       <div class="footer-col">
-        <h3>Categories</h3>
+        <h3>Coverage</h3>
         <ul role="list">
-          <li><a href="/career-decisions/">Career Decisions</a></li>
           <li><a href="/ai-and-jobs/">AI & Jobs</a></li>
+          <li><a href="/career-decisions/">Career Decisions</a></li>
           <li><a href="/learning/">Learning</a></li>
           <li><a href="/money-decisions/">Money Decisions</a></li>
           <li><a href="/side-hustles/">Side Hustles</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h3>Trust</h3>
+        <h3>Method & Trust</h3>
         <ul role="list">
-          <li><a href="/about.html">About</a></li>
-          <li><a href="/how-scoring-works.html">How Scoring Works</a></li>
-          <li><a href="/sources-update-policy.html">Sources & Updates</a></li>
-          <li><a href="/disclaimer.html">Disclaimer</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/how-we-evaluate-decisions/">How We Evaluate Decisions</a></li>
+          <li><a href="/review-method/">Review Method</a></li>
+          <li><a href="/editorial-policy/">Editorial Policy</a></li>
           <li><a href="/best-of/">Best Of Guides</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h3>Legal</h3>
+        <h3>Policies</h3>
         <ul role="list">
-          <li><a href="/disclaimer.html">Terms &amp; Disclaimer</a></li>
+          <li><a href="/disclaimer/">Disclaimer</a></li>
           <li><a href="/affiliate-disclosure/">Affiliate Disclosure</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; ${new Date().getFullYear()} YourNextStep.ai. AI-generated analysis. Not professional advice. <a href="/disclaimer.html">Full disclaimer</a>.</p>
+      <p>&copy; ${new Date().getFullYear()} YourNextStep.ai. AI-assisted editorial decision guides with cited sources and a published methodology. <a href="/disclaimer/">Full disclaimer</a>.</p>
     </div>
   </footer>`;
 }
@@ -1290,6 +1537,303 @@ function affiliateDisclosurePageHTML() {
   });
 }
 
+function renderDecisionCardHTML(d) {
+  const vTag = verdictTagClass(d.verdict);
+  const vColor = d.verdict === 'Yes' ? 'var(--verdict-yes)' : d.verdict === 'No' ? 'var(--verdict-no)' : 'var(--verdict-depends)';
+  const description = decisionMeta(d).description || '';
+  const shortDesc = description.length > 130 ? `${description.slice(0, 127)}...` : description;
+  return `<a href="/${d.slug}/" class="decision-card">
+    <div class="decision-card-top">
+      <span class="decision-card-verdict ${vTag}">${d.verdict}</span>
+      <span class="decision-card-confidence">${d.confidence}% confidence</span>
+    </div>
+    <h3 class="decision-card-title">${esc(d.title)}</h3>
+    <p class="decision-card-desc">${esc(shortDesc)}</p>
+    <div class="decision-card-footer">
+      <div class="decision-card-meter" role="meter" aria-valuenow="${d.confidence}" aria-valuemin="0" aria-valuemax="100" aria-label="Confidence ${d.confidence}%">
+        <div class="decision-card-meter-fill" style="width:${d.confidence}%; background:${vColor}"></div>
+      </div>
+      <span class="decision-card-meta">${d.readingTime || 7} min read</span>
+    </div>
+  </a>`;
+}
+
+function decisionPageHTMLV2(d, allDecisions) {
+  const catMeta = CATEGORIES[d.category] || { title: d.category, icon: 'fileText' };
+  const isYMYL = d.category === 'money-decisions';
+  const meta = decisionMeta(d);
+  const related = (d.relatedSlugs || []).map((slug) => allDecisions.find((entry) => entry.slug === slug)).filter(Boolean);
+  const weightedScore = d.scorecard.reduce((sum, row) => sum + (row.weight * row.score), 0);
+  const maxWeightedScore = d.scorecard.reduce((sum, row) => sum + (row.weight * 10), 0);
+  const overallPct = Math.round((weightedScore / maxWeightedScore) * 100);
+  const hasAffiliateLinks = (d.nextSteps || []).slice(0, 3).some((step) => step.affiliateUrl);
+  const updatedLabel = formatDateHuman(d.updatedDate);
+  const breadcrumbItems = [
+    { name: 'Home', url: SITE_URL + '/' },
+    { name: catMeta.title, url: `${SITE_URL}/${d.category}/` },
+    { name: meta.h1, url: `${SITE_URL}/${d.slug}/` }
+  ];
+  const jsonLdBlocks = [
+    jsonLD_Breadcrumb(breadcrumbItems),
+    jsonLD_Article(d),
+    jsonLD_WebPage({ name: meta.h1, description: meta.description, url: `${SITE_URL}/${d.slug}/` })
+  ];
+  if (d.faq && d.faq.length >= 5) jsonLdBlocks.push(jsonLD_FAQ(d.faq));
+
+  const content = `
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span class="separator">></span>
+        <a href="/${d.category}/">${esc(catMeta.title)}</a> <span class="separator">></span>
+        <span aria-current="page">${esc(meta.h1)}</span>
+      </nav>
+      <header class="decision-hero">
+        <div class="decision-hero-chips">
+          <span class="eyebrow-chip">${esc(catMeta.title)}</span>
+          <span class="eyebrow-chip">${esc(humanIntentLabel(d.primaryIntent))}</span>
+          <span class="eyebrow-chip">Updated ${esc(updatedLabel)}</span>
+        </div>
+        <h1>${esc(meta.h1)}</h1>
+        <p class="decision-standfirst">${esc(meta.standfirst)}</p>
+        <div class="trust-strip">
+          <span>${d.sources.length} cited sources</span>
+          <span>${d.readingTime} min read</span>
+          <span><a href="/how-we-evaluate-decisions/">Published methodology</a></span>
+          <span><a href="/review-method/">Review method</a></span>
+          ${isYMYL ? '<span>Educational money guidance only</span>' : ''}
+        </div>
+      </header>
+      <section class="decision-summary-panel" id="quick-answer" aria-label="Quick answer">
+        <div class="decision-summary-main">
+          <p class="decision-summary-label">Quick answer</p>
+          <p class="decision-summary-copy">${esc(decisionQuickAnswer(d))}</p>
+          <p class="decision-bottom-line"><strong>Bottom line:</strong> ${esc(decisionBottomLine(d))}</p>
+        </div>
+        <aside class="decision-score-aside" aria-label="Decision summary">
+          <div class="decision-score-badge ${verdictClass(d.verdict)}">${esc(d.verdict)}</div>
+          <div class="decision-score-confidence">${d.confidence}% confidence</div>
+          <p>${overallPct}% weighted score based on the factors below.</p>
+        </aside>
+      </section>
+      <section class="decision-fit-grid" aria-label="Fit guidance">
+        <div class="who-card who-should">
+          <h2>${ICONS.check} Best answer if your situation looks like this</h2>
+          <ul role="list">${d.whoShould.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>
+        </div>
+        <div class="who-card who-shouldnt">
+          <h2>${ICONS.circleX} Probably not if these conditions apply</h2>
+          <ul role="list">${d.whoShouldNot.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>
+        </div>
+      </section>
+      <section class="decision-section" aria-label="When the answer changes">
+        <h2>The decision changes if...</h2>
+        <div class="insight-grid">
+          ${decisionChangesIf(d).map((item) => `<div class="insight-card"><p>${esc(item)}</p></div>`).join('')}
+        </div>
+      </section>
+      <nav class="decision-toc" aria-label="Page sections">
+        <a href="#quick-answer">Quick answer</a>
+        <a href="#scorecard">Scorecard</a>
+        <a href="#evidence">Why we say this</a>
+        <a href="#risks">Risks</a>
+        <a href="#next-steps">Next steps</a>
+        <a href="#sources">Sources</a>
+      </nav>
+      <section class="decision-section" id="scorecard" aria-label="Decision scorecard">
+        <h2>Decision Scorecard</h2>
+        <div class="scorecard" role="table" aria-label="Decision scorecard table">
+          <div class="scorecard-header" role="row">
+            <span class="scorecard-col-factor" role="columnheader">Factor</span>
+            <span class="scorecard-col-weight" role="columnheader">Weight</span>
+            <span class="scorecard-col-score" role="columnheader">Score</span>
+            <span class="scorecard-col-weighted" role="columnheader">Weighted</span>
+          </div>
+          ${d.scorecard.map((row) => {
+    const weighted = row.weight * row.score;
+    const maxW = row.weight * 10;
+    const pct = Math.round((weighted / maxW) * 100);
+    return `<div class="scorecard-row" role="row">
+      <span class="scorecard-cell scorecard-cell-factor" data-label="Factor" role="cell">${esc(row.factor)}</span>
+      <span class="scorecard-cell scorecard-cell-weight" data-label="Weight" role="cell">${row.weight}/10</span>
+      <span class="scorecard-cell scorecard-cell-score" data-label="Score" role="cell">${row.score}/10</span>
+      <span class="scorecard-cell scorecard-cell-weighted" data-label="Weighted" role="cell"><span class="scorecard-weighted-value">${weighted}/${maxW}</span><div class="scorecard-bar"><div class="scorecard-bar-fill" style="width:${pct}%"></div></div></span>
+    </div>`;
+  }).join('')}
+          <div class="scorecard-total" role="row"><span>Overall Score</span><span>${overallPct}% (${weightedScore}/${maxWeightedScore})</span></div>
+        </div>
+      </section>
+      <section class="decision-section" id="evidence" aria-label="Why we say this"><h2>Why we say this</h2><div class="insight-grid">${decisionEvidence(d).map((item) => `<div class="insight-card"><p>${esc(item)}</p></div>`).join('')}</div></section>
+      <section class="decision-section" aria-label="Pros and cons"><h2>Pros & Cons</h2><div class="proscons-grid"><div class="proscons-column"><h3>${ICONS.thumbsUp} Pros</h3>${d.pros.map((item) => `<div class="proscons-item"><h4>${esc(item.title)}</h4><p>${esc(item.detail)}</p></div>`).join('')}</div><div class="proscons-column"><h3>${ICONS.thumbsDown} Cons</h3>${d.cons.map((item) => `<div class="proscons-item"><h4>${esc(item.title)}</h4><p>${esc(item.detail)}</p></div>`).join('')}</div></div></section>
+      <section class="decision-section" id="risks" aria-label="Risks people underestimate"><h2>Risks People Underestimate</h2><div class="risk-list">${d.risksUnderestimated.map((item) => `<div class="risk-card"><span class="risk-icon" aria-hidden="true">${ICONS.alertTriangle}</span><p>${esc(item)}</p></div>`).join('')}</div></section>
+      <section class="decision-section" aria-label="Common mistakes"><h2>Common Mistakes</h2><div class="risk-list risk-list--mistakes">${decisionMistakes(d).map((item, index) => `<div class="risk-card risk-card--mistake"><span class="risk-icon risk-icon--index" aria-hidden="true">${index + 1}</span><p>${esc(item)}</p></div>`).join('')}</div></section>
+      <section class="decision-section" aria-label="Realistic scenarios"><h2>3 Realistic Scenarios</h2><div class="scenarios-grid">${d.scenarios.map((scenario) => `<div class="scenario-card"><h3>${scenario.title}</h3><p>${esc(scenario.description)}</p></div>`).join('')}</div></section>
+      <section class="decision-section" id="next-steps" aria-label="Recommended next steps">
+        <h2>Recommended Next Steps</h2>
+        ${hasAffiliateLinks ? `<div class="affiliate-disclosure" role="note" aria-label="Advertising disclosure"><strong>Ad</strong> - Some links below are advertising (affiliate) links. If you use them, we may earn a commission. Our analysis is independent. <a href="/affiliate-disclosure/">Full disclosure</a>.</div>` : ''}
+        <div class="next-steps-list">${d.nextSteps.slice(0, 3).map((ns, index) => {
+    const isPrimary = ns.isPrimary ? ' primary' : '';
+    const slot = affiliateSlotFor(index);
+    const merchant = ns.affiliateUrl ? merchantFromUrl(ns.affiliateUrl) : '';
+    const ctaHTML = ns.affiliateUrl ? `<a href="${esc(ns.affiliateUrl)}" class="next-step-cta affiliate-link" rel="sponsored nofollow noopener noreferrer" target="_blank" data-affiliate="true" data-slot="${slot}" data-merchant="${esc(merchant)}" data-page-path="/${d.slug}/" data-item-id="${d.slug}-${index + 1}" data-item-title="${esc(ns.action)}" aria-label="${esc(`Advertising link: ${merchant}. ${ns.affiliateLabel || 'View offer'}`)}">${esc(ns.affiliateLabel || 'View offer')} <span class="sr-only">(advertising link, opens in new tab)</span></a>` : '';
+    return `<div class="next-step-card${isPrimary}"><div class="next-step-info"><h3>${ns.isPrimary ? ICONS.star + ' ' : ''}${esc(ns.action)}</h3></div>${ctaHTML}</div>`;
+  }).join('')}</div>
+      </section>
+      <section class="decision-section" id="audio" aria-label="Audio briefing"><div class="audio-player"><h2 class="audio-title">${ICONS.headphones} Audio Briefing</h2><p class="audio-player-subtitle">${d.audio.audioUrl ? 'Listen to the summary or read the transcript below.' : 'Audio coming soon - read the transcript below.'}</p>${d.audio.audioUrl ? `<audio preload="metadata" src="${esc(d.audio.audioUrl)}"></audio><div class="audio-controls"><div class="audio-main"><button class="btn-play" aria-label="Play audio briefing">${ICONS.play}</button><div class="audio-progress"><div class="progress-bar"><div class="progress-fill"></div></div></div></div><div class="audio-time"><span class="time-current">0:00</span><span class="time-duration">0:00</span></div></div>` : ''}<button class="audio-script-toggle" aria-expanded="false">Read transcript ▼</button><div class="audio-script" role="region" aria-label="Audio transcript"><p>${esc(d.audio.script)}</p></div></div></section>
+      <section class="decision-section" aria-label="Frequently asked questions"><h2>Frequently Asked Questions</h2><div class="faq-list">${d.faq.map((item) => `<details class="faq-item"><summary>${esc(item.q)}</summary><div class="faq-answer"><p>${esc(item.a)}</p></div></details>`).join('')}</div></section>
+      <section class="decision-section" id="sources" aria-label="Sources"><h2>Sources and Transparency</h2><div class="source-transparency-card"><p><strong>Last reviewed:</strong> ${esc(updatedLabel)}. This page links its reasoning back to the scorecard, scenarios, and sources below.</p><p>${isYMYL ? 'This money guide is educational and not personal financial advice. Use it to structure your thinking before making a real decision.' : 'This guide is built to be easy to summarize, verify, and challenge with the evidence below.'}</p></div><ol class="sources-list">${d.sources.map((source) => `<li>${renderSourceItem(source)}</li>`).join('')}</ol></section>
+      ${related.length > 0 ? `<section class="decision-section" aria-label="Related decisions"><h2>Related Comparisons and Next Reads</h2><div class="related-grid">${related.map((entry) => `<a href="/${entry.slug}/" class="related-card"><h3>${esc(entry.title)}</h3><span class="related-verdict ${verdictTagClass(entry.verdict)}">${entry.verdict} - ${entry.confidence}%</span></a>`).join('')}</div></section>` : ''}
+      <section class="decision-section" aria-label="Explore more guides"><h2>What to Read Next</h2><div class="related-grid related-grid--trust"><a href="/${d.category}/" class="related-card"><h3>${esc(catMeta.title)} hub</h3><span class="related-verdict">See the strongest related guides in this cluster.</span></a><a href="/best-of/" class="related-card"><h3>Best Of guides</h3><span class="related-verdict">Start with the pages that best explain the site's strongest topics.</span></a><a href="/how-we-evaluate-decisions/" class="related-card"><h3>How we evaluate decisions</h3><span class="related-verdict">See how verdicts, confidence, and factor weights are assigned.</span></a></div></section>
+    </div>`;
+
+  return shell({ title: meta.title, description: meta.description, canonical: `${SITE_URL}/${d.slug}/`, bodyClass: 'page-decision', ogType: 'article', content, noindex: d.noindex, jsonLdBlocks });
+}
+
+function categoryPageHTMLV2(catSlug, decisions, page, totalPages) {
+  const cat = CATEGORIES[catSlug];
+  const hub = CATEGORY_HUBS[catSlug] || {};
+  const featured = pickDecisionsBySlug(decisions, hub.startHere || []);
+  const introCards = featured.length > 0 ? featured : decisions.slice(0, 3);
+  const avgConfidence = decisions.length > 0 ? Math.round(decisions.reduce((sum, item) => sum + item.confidence, 0) / decisions.length) : 0;
+  const paginationHTML = totalPages > 1 ? `<nav class="pagination" aria-label="Category pages">
+    ${page > 1 ? `<a href="/${catSlug}/${page === 2 ? '' : `page/${page - 1}/`}" rel="prev">Prev</a>` : ''}
+    ${Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+    const href = p === 1 ? `/${catSlug}/` : `/${catSlug}/page/${p}/`;
+    return p === page ? `<span class="current">${p}</span>` : `<a href="${href}">${p}</a>`;
+  }).join('')}
+    ${page < totalPages ? `<a href="/${catSlug}/page/${page + 1}/" rel="next">Next</a>` : ''}
+  </nav>` : '';
+  const canonical = page === 1 ? `${SITE_URL}/${catSlug}/` : `${SITE_URL}/${catSlug}/page/${page}/`;
+  const breadcrumbItems = [{ name: 'Home', url: SITE_URL + '/' }, { name: cat.title, url: canonical }];
+  const content = `
+    <section class="category-hero category-hero--authority">
+      <div class="category-hero-bg" aria-hidden="true"></div>
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span class="separator">></span>
+          <span aria-current="page">${esc(cat.title)}</span>
+        </nav>
+        <div class="category-hero-icon">${ICONS[cat.icon]}</div>
+        <h1>${esc(cat.title)}</h1>
+        <p class="category-hero-desc">${esc(hub.summary || cat.description)}</p>
+        <div class="trust-strip">
+          <span>${decisions.length} guides in this cluster</span>
+          <span>${avgConfidence}% average confidence</span>
+          <span>${esc(hub.audience || cat.description)}</span>
+        </div>
+      </div>
+    </section>
+    <section class="section"><div class="container container--wide"><div class="hub-overview-grid"><div class="hub-overview-card"><h2>How to use this hub</h2><ul role="list" class="hub-list">${(hub.framework || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul></div><div class="hub-overview-card"><h2>Questions this cluster should answer well</h2><ul role="list" class="hub-list">${(hub.questions || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul></div></div></div></section>
+    <section class="section"><div class="container container--wide"><div class="section-header"><h2>Start here</h2><p>These are the best entry points if you want the strongest pages in ${esc(cat.title.toLowerCase())}.</p></div><div class="decision-card-grid">${introCards.map((item) => renderDecisionCardHTML(item)).join('')}</div></div></section>
+    <section class="section"><div class="container container--wide"><div class="section-header"><h2>All ${esc(cat.title)} guides</h2><p>Browse the full cluster to compare adjacent decisions and follow the logic between related pages.</p></div><div class="decision-card-grid">${decisions.map((item) => renderDecisionCardHTML(item)).join('')}</div>${paginationHTML}</div></section>
+    <section class="section"><div class="container container--wide"><div class="hub-trust-links"><a href="/how-we-evaluate-decisions/" class="card"><h3>How we evaluate decisions</h3><p>See the verdict logic, score weighting, and confidence framework.</p></a><a href="/editorial-policy/" class="card"><h3>Editorial policy</h3><p>See sourcing standards, update cadence, and how we handle corrections.</p></a><a href="/review-method/" class="card"><h3>Review method</h3><p>See the page-level checklist used before a guide is published or updated.</p></a></div></div></section>`;
+
+  return shell({
+    title: `${cat.title}: Decision Guides and Frameworks`,
+    description: hub.summary || cat.description,
+    canonical,
+    bodyClass: 'page-category',
+    content,
+    jsonLdBlocks: [jsonLD_Breadcrumb(breadcrumbItems), jsonLD_CollectionPage({ name: cat.title, description: hub.summary || cat.description, url: canonical, items: decisions })]
+  });
+}
+
+function homepageHTMLV2(allDecisions) {
+  const featured = pickDecisionsBySlug(allDecisions, HOME_FEATURED_SLUGS);
+  const secondary = pickDecisionsBySlug(allDecisions, HOME_SECONDARY_SLUGS);
+  const categoryCounts = {};
+  for (const decision of allDecisions) categoryCounts[decision.category] = (categoryCounts[decision.category] || 0) + 1;
+  const content = `
+    <section class="hero hero--authority">
+      <div class="hero-content container">
+        <span class="hero-badge">${ICONS.brain} Decision guides for the AI era</span>
+        <h1>Make better work, learning, and money decisions without generic advice.</h1>
+        <p class="hero-subtitle">YourNextStep.ai is building a decision-support library around AI-era careers, practical skill choices, and financial sequencing. Each guide aims to answer the question fast, show the reasoning, and make the tradeoffs explicit.</p>
+        <div class="hero-cta-group"><a href="#start-here" class="hero-cta">Start with the strongest guides</a><a href="/how-we-evaluate-decisions/" class="hero-cta hero-cta--secondary">See the methodology</a></div>
+        <div class="trust-strip trust-strip--hero"><span>Verdict-first pages</span><span>Cited sources</span><span>Published review method</span><span>Clear "depends" logic</span></div>
+      </div>
+    </section>
+    <section class="section"><div class="container container--wide"><div class="hub-overview-grid"><div class="hub-overview-card"><h2>Primary focus right now</h2><p>The highest-authority wedge for this site is AI, work, and learning decisions. That is where the homepage now leads, and where internal linking is strongest.</p></div><div class="hub-overview-card"><h2>Secondary coverage</h2><p>Money guides stay on the site, but they are framed more carefully as educational decision support with stronger source and transparency requirements.</p></div></div></div></section>
+    <section class="section" id="start-here"><div class="container container--wide"><div class="section-header"><h2>Start here</h2><p>These are the pages most likely to explain what the site is good at and how to use it.</p></div><div class="decision-card-grid">${featured.map((item) => renderDecisionCardHTML(item)).join('')}</div></div></section>
+    <section class="section"><div class="container container--wide"><div class="section-header"><h2>How the site works</h2><p>The goal is not to tell every reader the same answer. The goal is to show which conditions make the answer change.</p></div><div class="steps-grid"><div class="step"><h3>1. Answer fast</h3><p>Each priority page opens with a quick answer, best-fit conditions, and the main reason the verdict could change.</p></div><div class="step"><h3>2. Show the logic</h3><p>The scorecard, evidence highlights, and downside scenarios make the reasoning inspectable instead of hand-wavy.</p></div><div class="step"><h3>3. Keep trust visible</h3><p>Update dates, source sections, editorial policy, review method, and disclosures stay visible instead of hiding in the footer.</p></div></div></div></section>
+    <section class="section"><div class="container container--wide"><div class="section-header"><h2>Topic clusters</h2><p>Use the hubs below to move from one decision to the next instead of landing on isolated pages.</p></div><div class="card-grid">${Object.entries(CATEGORIES).map(([slug, cat]) => `<a href="/${slug}/" class="card"><div class="card-icon">${ICONS[cat.icon]}</div><h3>${esc(cat.title)}</h3><p>${esc((CATEGORY_HUBS[slug] && CATEGORY_HUBS[slug].summary) || cat.description)}</p><span class="card-count">${categoryCounts[slug] || 0} published guides</span></a>`).join('')}</div></div></section>
+    <section class="section"><div class="container container--wide"><div class="section-header"><h2>Useful next reads</h2><p>If you already know the core topics, these pages help connect the clusters.</p></div><div class="decision-card-grid">${secondary.map((item) => renderDecisionCardHTML(item)).join('')}</div></div></section>
+    <section class="section"><div class="container container--wide"><div class="hub-trust-links"><a href="/about/" class="card"><h3>About the site</h3><p>What the site covers, what it does not cover, and why the current focus is intentionally narrower than the total archive.</p></a><a href="/editorial-policy/" class="card"><h3>Editorial policy</h3><p>How sources are chosen, how updates are handled, and what happens when evidence changes.</p></a><a href="/review-method/" class="card"><h3>Review method</h3><p>The checklist behind every page, especially for money and work-risk topics.</p></a></div></div></section>`;
+  return shell({
+    title: 'AI-Era Career, Learning, and Money Decision Guides',
+    description: 'Decision guides for AI-era careers, learning choices, and practical money sequencing. Get quick answers, cited evidence, and transparent tradeoffs.',
+    canonical: SITE_URL + '/',
+    bodyClass: 'page-home',
+    content,
+    jsonLdBlocks: [jsonLD_WebPage({ name: 'YourNextStep.ai', description: 'Decision guides for AI-era careers, learning choices, and practical money sequencing.', url: SITE_URL + '/' })]
+  });
+}
+
+function bestOfPageHTMLV2(allDecisions) {
+  const featured = pickDecisionsBySlug(allDecisions, HOME_FEATURED_SLUGS);
+  const curated = featured.length > 0 ? featured : [...allDecisions].sort((a, b) => b.confidence - a.confidence).slice(0, 12);
+  const breadcrumbItems = [{ name: 'Home', url: SITE_URL + '/' }, { name: 'Best Of', url: SITE_URL + '/best-of/' }];
+  const content = `<div class="container container--wide"><section class="section"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span class="separator">></span><span aria-current="page">Best Of</span></nav><h1>Best Of Decision Guides</h1><p class="decision-standfirst">Start here if you want the clearest examples of the site's target format: fast answers, explicit tradeoffs, and strong internal paths into each cluster.</p></section><section class="section"><div class="decision-card-grid">${curated.map((item) => renderDecisionCardHTML(item)).join('')}</div></section></div>`;
+  return shell({
+    title: 'Best Of Decision Guides',
+    description: 'A curated set of the strongest decision guides on YourNextStep.ai.',
+    canonical: SITE_URL + '/best-of/',
+    bodyClass: 'page-best-of',
+    content,
+    jsonLdBlocks: [jsonLD_Breadcrumb(breadcrumbItems), jsonLD_CollectionPage({ name: 'Best Of Decision Guides', description: 'A curated set of the strongest decision guides on YourNextStep.ai.', url: SITE_URL + '/best-of/', items: curated })]
+  });
+}
+
+function aboutPageHTMLV2() {
+  return shell({
+    title: 'About YourNextStep.ai',
+    description: 'What YourNextStep.ai covers, how the site is focused, and how to use the decision guides responsibly.',
+    canonical: SITE_URL + '/about/',
+    bodyClass: 'page-about',
+    content: `<div class="container"><section class="section"><h1>About YourNextStep.ai</h1><p class="decision-standfirst">YourNextStep.ai is building a decision-support library for AI-era work, learning, and practical money choices. The goal is not to publish endless "should I..." pages. The goal is to make hard decisions clearer.</p><h2>What the site is trying to become</h2><p>We want each strong page to do four things well: answer the question fast, show the reasoning, explain when the answer changes, and make the next best read obvious. That makes the site more useful for readers, more defensible in search, and easier for AI systems to summarize accurately.</p><h2 style="margin-top:var(--space-8);">Current editorial focus</h2><p>Right now the site is intentionally strongest around AI, work, and learning decisions. Money pages remain part of the product, but they are handled more carefully as educational decision support rather than personal advice. Side-hustle pages are treated as a secondary cluster rather than the core identity of the site.</p><h2 style="margin-top:var(--space-8);">What readers should expect</h2><ul class="hub-list"><li>Verdict-first pages with explicit "yes", "no", or "depends" logic.</li><li>Weighted scorecards that show what matters most in the decision.</li><li>Source sections and update dates that stay visible, not hidden.</li><li>Clear statements about what the page is not claiming.</li></ul><h2 style="margin-top:var(--space-8);">AI use and limits</h2><p>The site uses AI-assisted drafting and structuring, but it should not present itself as trustworthy because of AI. Trust comes from editorial scope control, transparent sourcing, visible review standards, and honest limits.</p><h2 style="margin-top:var(--space-8);">Contact</h2><p>Questions, corrections, and partnership inquiries can be sent to <a href="mailto:hello@yournextstep.ai">hello@yournextstep.ai</a>.</p></section></div>`,
+    jsonLdBlocks: [jsonLD_WebPage({ type: 'AboutPage', name: 'About YourNextStep.ai', description: 'What YourNextStep.ai covers, how the site is focused, and how to use the decision guides responsibly.', url: SITE_URL + '/about/' })]
+  });
+}
+
+function scoringPageHTMLV2() {
+  return shell({
+    title: 'How We Evaluate Decisions',
+    description: 'The methodology behind verdicts, scorecards, confidence ratings, and how YourNextStep.ai decides when an answer changes.',
+    canonical: SITE_URL + '/how-we-evaluate-decisions/',
+    bodyClass: 'page-scoring',
+    content: `<div class="container"><section class="section"><h1>How We Evaluate Decisions</h1><p class="decision-standfirst">A good decision page should not just say what to do. It should show the conditions under which the answer changes. That is the point of the YourNextStep.ai framework.</p><h2>The scorecard is a decision map, not a magic number</h2><p>Each guide scores multiple factors on two dimensions: weight and score. Weight shows how important the factor is for that decision. Score shows how favorable the evidence is. The total helps summarize the page, but readers should always inspect the strongest and weakest factors before acting.</p><h2 style="margin-top:var(--space-8);">What the verdict means</h2><ul class="hub-list"><li><strong>Yes:</strong> The default case is favorable for the target audience, assuming the obvious blockers are not present.</li><li><strong>No:</strong> The downside, timing, or fit problems are strong enough that most readers should not proceed yet.</li><li><strong>Depends:</strong> The answer flips based on constraints like runway, policy, time horizon, or execution ability.</li></ul><h2 style="margin-top:var(--space-8);">What confidence means</h2><p>Confidence is not a claim of certainty. It is a claim about how strongly the page can defend the verdict using the evidence available, how sensitive the decision is to context, and how much disagreement should exist even after reading the guide.</p><h2 style="margin-top:var(--space-8);">What gets more scrutiny</h2><p>Money pages, work-risk pages, and advice that could trigger obvious real-world harm receive tighter scope control. Those pages should explain tradeoffs, not overstate certainty, and should link visibly to the relevant policy and review standards.</p></section></div>`
+  });
+}
+
+function editorialPolicyPageHTMLV2() {
+  return shell({
+    title: 'Editorial Policy',
+    description: 'How YourNextStep.ai chooses sources, updates pages, handles corrections, and separates editorial judgment from commercial relationships.',
+    canonical: SITE_URL + '/editorial-policy/',
+    bodyClass: 'page-sources',
+    content: `<div class="container"><section class="section"><h1>Editorial Policy</h1><p class="decision-standfirst">This page exists because trust should be productized, not implied. If a reader or answer engine cannot tell how a site handles sources, updates, and commercial incentives, the content should not be trusted by default.</p><h2>Source hierarchy</h2><ul class="hub-list"><li>Primary sources where possible: official statistics, regulatory texts, original research, and first-party methodology documents.</li><li>Strong secondary sources when they add synthesis without replacing the primary evidence.</li><li>Weak sources are not used to carry key claims on their own.</li></ul><h2 style="margin-top:var(--space-8);">Update policy</h2><p>Pages should show their last updated date clearly. High-volatility topics should be reviewed more often than slow-moving ones. When evidence changes enough to affect the verdict, the page should be updated rather than silently left to drift.</p><h2 style="margin-top:var(--space-8);">Commercial independence</h2><p>Affiliate links may appear in some next-step sections, but they should never be allowed to rewrite the verdict. Money pages especially should avoid looking like sales funnels disguised as advice pages.</p><h2 style="margin-top:var(--space-8);">Corrections</h2><p>If a factual error, broken source, or outdated recommendation is identified, it should be corrected quickly and the update date should reflect the change. Questions and corrections can be sent to <a href="mailto:hello@yournextstep.ai">hello@yournextstep.ai</a>.</p></section></div>`
+  });
+}
+
+function reviewMethodPageHTMLV2() {
+  return shell({
+    title: 'Review Method',
+    description: 'The checklist used before YourNextStep.ai publishes or updates a decision page, with stricter standards for money and work-risk topics.',
+    canonical: SITE_URL + '/review-method/',
+    bodyClass: 'page-sources',
+    content: `<div class="container"><section class="section"><h1>Review Method</h1><p class="decision-standfirst">Every decision page should survive a simple question: if someone copies the quick answer into a search result or AI answer, would the page still be fair, grounded, and responsible?</p><h2>Core checklist</h2><ul class="hub-list"><li>Does the page answer the question in the first screen without forcing the reader through filler?</li><li>Does it show what changes the answer instead of pretending every reader is identical?</li><li>Are the strongest claims traceable to the scorecard and sources?</li><li>Does the page include at least one clean, standalone summary section that can be cited accurately?</li></ul><h2 style="margin-top:var(--space-8);">Extra checks for money and risk-sensitive topics</h2><ul class="hub-list"><li>Remove overconfident language and absolute prescriptions.</li><li>Check that downside scenarios are realistic, not decorative.</li><li>Keep the page clearly educational and separate from commercial calls to action.</li></ul><h2 style="margin-top:var(--space-8);">Why this matters for GEO</h2><p>Generative answer engines prefer content that is easy to chunk, summarize, and defend. A review method that rewards explicit reasoning, visible caveats, and source transparency makes the content more citation-worthy without turning it into SEO sludge.</p></section></div>`
+  });
+}
+
+function disclaimerPageHTMLV2() {
+  return shell({
+    title: 'Disclaimer',
+    description: 'Important limits on how to use YourNextStep.ai pages, especially for financial or risk-sensitive decisions.',
+    canonical: SITE_URL + '/disclaimer/',
+    bodyClass: 'page-disclaimer',
+    content: `<div class="container"><section class="section"><h1>Disclaimer</h1><p class="decision-standfirst">YourNextStep.ai publishes educational decision guides. The site is designed to clarify tradeoffs and improve judgment, not replace professional advice or personal responsibility.</p><h2>Not personalized professional advice</h2><p>Nothing on the site should be treated as individualized financial, legal, medical, or career advice. If a decision has meaningful legal, health, tax, or capital consequences, use the page to prepare better questions for a qualified professional.</p><h2 style="margin-top:var(--space-8);">AI-assisted publishing</h2><p>Some content is drafted or structured with AI assistance. That does not make it automatically more objective or complete. Readers should judge the site by the clarity of its reasoning, the visibility of its sources, and the honesty of its limits.</p><h2 style="margin-top:var(--space-8);">No guarantees</h2><p>Decision guides are not promises about outcomes. Results depend on timing, behavior, context, and changing external conditions.</p></section></div>`
+  });
+}
+
 function page404HTML() {
   return shell({
     title: '404 — Page Not Found',
@@ -1372,14 +1916,14 @@ async function build() {
   }
 
   // Generate homepage
-  await fs.writeFile(path.join(DIST, 'index.html'), homepageHTML(publishable));
+  await fs.writeFile(path.join(DIST, 'index.html'), homepageHTMLV2(publishable));
   console.log('  📄 index.html');
 
   // Generate decision pages
   for (const d of publishable) {
     const dir = path.join(DIST, d.slug);
     await fs.ensureDir(dir);
-    await fs.writeFile(path.join(dir, 'index.html'), decisionPageHTML(d, publishable));
+    await fs.writeFile(path.join(dir, 'index.html'), decisionPageHTMLV2(d, publishable));
     console.log(`  📄 ${d.slug}/index.html`);
   }
 
@@ -1387,10 +1931,11 @@ async function build() {
   const sitemapUrls = [
     { url: SITE_URL + '/', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/best-of/', lastmod: new Date().toISOString().slice(0, 10) },
-    { url: SITE_URL + '/about.html', lastmod: new Date().toISOString().slice(0, 10) },
-    { url: SITE_URL + '/how-scoring-works.html', lastmod: new Date().toISOString().slice(0, 10) },
-    { url: SITE_URL + '/sources-update-policy.html', lastmod: new Date().toISOString().slice(0, 10) },
-    { url: SITE_URL + '/disclaimer.html', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/about/', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/how-we-evaluate-decisions/', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/editorial-policy/', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/review-method/', lastmod: new Date().toISOString().slice(0, 10) },
+    { url: SITE_URL + '/disclaimer/', lastmod: new Date().toISOString().slice(0, 10) },
     { url: SITE_URL + '/affiliate-disclosure/', lastmod: new Date().toISOString().slice(0, 10) }
   ];
 
@@ -1404,7 +1949,7 @@ async function build() {
       const dirParts = page === 1 ? [DIST, catSlug] : [DIST, catSlug, 'page', String(page)];
       const dir = path.join(...dirParts);
       await fs.ensureDir(dir);
-      await fs.writeFile(path.join(dir, 'index.html'), categoryPageHTML(catSlug, pageDecisions, page, totalPages));
+      await fs.writeFile(path.join(dir, 'index.html'), categoryPageHTMLV2(catSlug, pageDecisions, page, totalPages));
       console.log(`  📄 ${catSlug}/${page === 1 ? '' : 'page/' + page + '/'}index.html`);
 
       const catUrl = page === 1 ? `${SITE_URL}/${catSlug}/` : `${SITE_URL}/${catSlug}/page/${page}/`;
@@ -1419,12 +1964,23 @@ async function build() {
 
   // Trust pages
   const bestOfDir = path.join(DIST, 'best-of');
+  const aboutDir = path.join(DIST, 'about');
+  const evaluateDir = path.join(DIST, 'how-we-evaluate-decisions');
+  const editorialDir = path.join(DIST, 'editorial-policy');
+  const reviewDir = path.join(DIST, 'review-method');
+  const disclaimerDir = path.join(DIST, 'disclaimer');
   await fs.ensureDir(bestOfDir);
-  await fs.writeFile(path.join(bestOfDir, 'index.html'), bestOfPageHTML(publishable));
-  await fs.writeFile(path.join(DIST, 'about.html'), aboutPageHTML());
-  await fs.writeFile(path.join(DIST, 'how-scoring-works.html'), scoringPageHTML());
-  await fs.writeFile(path.join(DIST, 'sources-update-policy.html'), sourcesPageHTML());
-  await fs.writeFile(path.join(DIST, 'disclaimer.html'), disclaimerPageHTML());
+  await fs.ensureDir(aboutDir);
+  await fs.ensureDir(evaluateDir);
+  await fs.ensureDir(editorialDir);
+  await fs.ensureDir(reviewDir);
+  await fs.ensureDir(disclaimerDir);
+  await fs.writeFile(path.join(bestOfDir, 'index.html'), bestOfPageHTMLV2(publishable));
+  await fs.writeFile(path.join(aboutDir, 'index.html'), aboutPageHTMLV2());
+  await fs.writeFile(path.join(evaluateDir, 'index.html'), scoringPageHTMLV2());
+  await fs.writeFile(path.join(editorialDir, 'index.html'), editorialPolicyPageHTMLV2());
+  await fs.writeFile(path.join(reviewDir, 'index.html'), reviewMethodPageHTMLV2());
+  await fs.writeFile(path.join(disclaimerDir, 'index.html'), disclaimerPageHTMLV2());
   await fs.writeFile(path.join(DIST, '404.html'), page404HTML());
 
   // Affiliate disclosure page
@@ -1461,7 +2017,13 @@ ${sitemapUrls.map(u => `  <url><loc>${u.url}</loc><lastmod>${u.lastmod}</lastmod
   console.log('  🔍 search-index.json');
 
   // Netlify _redirects
-  const redirects = `# Netlify redirects\n/sitemap /sitemap.xml 301\n`;
+  const redirects = `# Netlify redirects
+/sitemap /sitemap.xml 301
+/about.html /about/ 301
+/how-scoring-works.html /how-we-evaluate-decisions/ 301
+/sources-update-policy.html /editorial-policy/ 301
+/disclaimer.html /disclaimer/ 301
+`;
   await fs.writeFile(path.join(DIST, '_redirects'), redirects);
 
   console.log('\n✅ Build complete! Output in dist/');

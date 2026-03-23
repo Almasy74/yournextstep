@@ -9,6 +9,26 @@
   force = true
   conditions = {Host = ["www.yournextstep.ai"]}
 
+[[redirects]]
+  from = "/about.html"
+  to = "/about/"
+  status = 301
+
+[[redirects]]
+  from = "/how-scoring-works.html"
+  to = "/how-we-evaluate-decisions/"
+  status = 301
+
+[[redirects]]
+  from = "/sources-update-policy.html"
+  to = "/editorial-policy/"
+  status = 301
+
+[[redirects]]
+  from = "/disclaimer.html"
+  to = "/disclaimer/"
+  status = 301
+
 [[headers]]
   for = "/style.css"
   [headers.values]
