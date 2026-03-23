@@ -2086,6 +2086,7 @@ a:hover {
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-6);
+  justify-content: center;
 }
 
 .hero-cta--secondary {
@@ -2099,6 +2100,10 @@ a:hover {
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-6);
+}
+
+.trust-strip--hero {
+  justify-content: center;
 }
 
 .trust-strip span {
