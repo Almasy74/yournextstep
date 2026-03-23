@@ -2150,6 +2150,7 @@ a:hover {
 .hub-overview-grid,
 .decision-fit-grid,
 .hub-trust-links,
+.page-trust-grid,
 .insight-grid {
   display: grid;
   gap: var(--space-5);
@@ -2157,7 +2158,8 @@ a:hover {
 
 .decision-summary-panel,
 .hub-overview-grid,
-.decision-fit-grid {
+.decision-fit-grid,
+.page-trust-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -2192,11 +2194,44 @@ a:hover {
 .decision-score-aside,
 .hub-overview-card,
 .insight-card,
-.source-transparency-card {
+.source-transparency-card,
+.page-trust-card {
   padding: var(--space-5);
   border-radius: var(--radius-xl);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
+}
+
+.page-trust-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+
+.page-trust-value {
+  margin-top: var(--space-2);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.page-trust-detail {
+  margin-top: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.source-transparency-card--trust p,
+.source-transparency-card--insight p,
+.hub-overview-card p {
+  color: var(--text-secondary);
+}
+
+.source-transparency-card--trust .hub-list {
+  margin-top: var(--space-4);
 }
 
 .decision-score-badge {
@@ -2254,6 +2289,7 @@ a:hover {
   .hub-overview-grid,
   .decision-fit-grid,
   .hub-trust-links,
+  .page-trust-grid,
   .insight-grid {
     grid-template-columns: 1fr;
   }

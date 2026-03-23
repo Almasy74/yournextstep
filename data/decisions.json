@@ -875,6 +875,22 @@
             "Investing before dealing with obvious balance-sheet weaknesses such as high-interest debt or no emergency buffer.",
             "Assuming 'diversified' means 'safe' in the short term. Index funds still fall hard in bear markets."
         ],
+        "whatMostPeopleMiss": "The hardest part of index-fund investing is rarely choosing the fund. It is making sure your time horizon, debt load, and emergency buffer are strong enough that you will not sabotage the plan under stress.",
+        "decisionThresholds": [
+            "If you need the money in less than 3 years, cash or near-cash usually beats equities.",
+            "If you carry debt above roughly 7%, paying that off first is often the cleaner default.",
+            "If you do not have a basic emergency fund yet, fix fragility before optimizing return."
+        ],
+        "compareInstead": [
+            {
+                "slug": "should-i-build-an-emergency-fund-before-investing",
+                "reason": "Read this first if your real question is whether liquidity should come before investing."
+            },
+            {
+                "slug": "should-i-pay-off-debt-or-invest",
+                "reason": "Read this instead if debt rate, employer match, or cash cushion are the real deciding variables."
+            }
+        ],
         "whoShould": [
             "Beginners who want a simple, evidence-based approach to building wealth over time",
             "Professionals too busy to research individual stocks or actively manage a portfolio",
@@ -1869,6 +1885,22 @@
             "Investing aggressively while carrying expensive revolving debt because market returns feel more exciting.",
             "Using every spare dollar on debt payoff while skipping employer match and maintaining no cash buffer.",
             "Treating low-rate debt and high-rate debt as if they should be handled the same way."
+        ],
+        "whatMostPeopleMiss": "This is not really a debt-versus-investing identity question. It is a sequencing question about guaranteed return, liquidity, and whether your plan will survive a bad month without forcing a worse move.",
+        "decisionThresholds": [
+            "Debt above about 7% usually deserves priority over broad investing.",
+            "Any employer match should usually be captured before extra low-rate debt payoff.",
+            "If aggressive debt payoff would leave you with no cash buffer, the plan is too brittle."
+        ],
+        "compareInstead": [
+            {
+                "slug": "should-i-build-an-emergency-fund-before-investing",
+                "reason": "Read this first if your biggest weakness is having no liquid buffer at all."
+            },
+            {
+                "slug": "should-i-invest-in-index-funds",
+                "reason": "Read this if you have already stabilized debt and want to judge whether index funds are the right default."
+            }
         ]
     },
     {
@@ -1902,6 +1934,22 @@
             "Using AI on sensitive or client-facing reports before you know what your organization actually allows.",
             "Mistaking polished language for accurate thinking and failing to verify claims line by line.",
             "Letting AI handle so much drafting that your own writing and reasoning muscles start to weaken."
+        ],
+        "whatMostPeopleMiss": "The biggest risk is often not hallucination. It is trust erosion. If coworkers or managers start to doubt whether your judgment is present in the work, the productivity gain can become a career cost.",
+        "decisionThresholds": [
+            "If the report is client-facing, regulated, or high-stakes, disclosure and policy matter more than speed.",
+            "If you cannot verify every claim and rewrite the final logic in your own judgment, AI use is too aggressive.",
+            "If you would hide the workflow from your manager, the use case is probably too risky."
+        ],
+        "compareInstead": [
+            {
+                "slug": "should-i-worry-my-job-will-be-automated",
+                "reason": "Read this if your deeper concern is long-term role risk rather than one writing workflow."
+            },
+            {
+                "slug": "should-i-learn-ai-to-stay-employable",
+                "reason": "Read this if the real question is how much AI fluency you need for career resilience."
+            }
         ],
         "whoShould": [
             "Analysts who write weekly status reports where format is standardized and insights come from data interpretation you provide",
@@ -2609,6 +2657,22 @@
             "Buying software, branding, and inventory before proving anyone wants the offer.",
             "Confusing 'easy to launch' with 'easy to grow'. Store setup is not the hard part; demand creation is.",
             "Quitting a stable job before the business has shown repeatable traction."
+        ],
+        "whatMostPeopleMiss": "The startup risk is often not technical execution. It is whether you can find distribution and survive long enough to learn what the market actually wants without blowing up your cash flow.",
+        "decisionThresholds": [
+            "If you need meaningful income in under 6 months, this is a much weaker bet.",
+            "If you have not validated demand with buyers, signups, or repeat traffic, do not scale commitment yet.",
+            "If starting the business would remove your financial runway, start smaller or later."
+        ],
+        "compareInstead": [
+            {
+                "slug": "should-i-start-a-side-hustle-while-employed",
+                "reason": "Read this first if your real question is how to test a business idea without losing salary stability."
+            },
+            {
+                "slug": "best-side-hustles-for-2026-ranked-by-time-money-and-skill",
+                "reason": "Read this if you are still choosing between models and have not settled on an online business path."
+            }
         ],
         "whoShould": [
             "Professionals with a validated product idea or clear niche they understand deeply from personal experience",
@@ -4630,6 +4694,22 @@
             "Skipping cash reserves because long-term market returns look better on paper.",
             "Treating credit cards as an emergency fund and discovering the interest cost only after the shock hits.",
             "Letting the emergency fund grow indefinitely because investing feels emotionally riskier than saving."
+        ],
+        "whatMostPeopleMiss": "An emergency fund is not just a cash pile. It is what protects the rest of your financial plan from being interrupted by one badly timed shock.",
+        "decisionThresholds": [
+            "If you have less than 1 month of real liquid reserves, build a starter buffer first.",
+            "If your job, household income, or fixed costs are unstable, aim for more cash before investing heavily.",
+            "If you already have a strong reserve and no expensive debt, modest investing can begin earlier."
+        ],
+        "compareInstead": [
+            {
+                "slug": "should-i-pay-off-debt-or-invest",
+                "reason": "Read this if high-interest debt and investing are competing for the same dollars."
+            },
+            {
+                "slug": "should-i-max-out-401k-before-investing-elsewhere",
+                "reason": "Read this if your real question is how to sequence retirement accounts after your cash reserve is in place."
+            }
         ],
         "whoShould": [
             "People with less than 3 months of essential expenses in true liquid savings",
