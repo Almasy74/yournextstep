@@ -2100,9 +2100,6 @@ a:hover {
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-6);
-}
-
-.trust-strip--hero {
   justify-content: center;
 }
 
