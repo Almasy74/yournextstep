@@ -267,7 +267,7 @@ function normalizeEntry(d) {
 function derivePrimaryIntent(category) {
   const map = {
     'career-decisions': 'career-service',
-    'ai-and-jobs': 'course-affiliate',
+    'ai-and-jobs': 'ai-work-service',
     'learning': 'course-affiliate',
     'money-decisions': 'tool-affiliate',
     'side-hustles': 'tool-affiliate'
@@ -304,6 +304,7 @@ function formatDateHuman(value) {
 
 function humanIntentLabel(intent) {
   const labels = {
+    'ai-work-service': 'AI at work and job-risk decision support',
     'career-service': 'Career decision support',
     'course-affiliate': 'Learning and skills decision support',
     'tool-affiliate': 'Tool and money decision support',
