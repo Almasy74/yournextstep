@@ -39,7 +39,10 @@
         "should-i-become-a-scrum-master",
         "should-i-switch-from-backend-to-frontend",
         "should-i-become-a-devops-engineer",
-        "should-i-leave-finance-for-tech"
+        "should-i-leave-finance-for-tech",
+        "should-i-optimize-my-resume-for-ats-or-for-humans",
+        "should-i-start-career-cushioning-in-the-ai-era",
+        "can-ai-actually-help-you-switch-careers-faster"
     ],
     "ai-and-jobs": [
         "should-i-worry-about-ai-replacing-my-job",
@@ -81,7 +84,9 @@
         "should-i-study-ai-safety",
         "should-i-use-ai-agents-for-work",
         "should-i-learn-ai-as-a-healthcare-professional",
-        "should-i-replace-my-team-with-ai-tools"
+        "should-i-replace-my-team-with-ai-tools",
+        "should-i-use-ai-for-interview-prep",
+        "how-much-ai-skill-does-your-job-actually-require"
     ],
     "learning": [
         "should-i-learn-python-in-2026",
