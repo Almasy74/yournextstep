@@ -525,10 +525,9 @@ a:hover {
 
 .nav-toggle svg {
   display: block !important;
-  width: 32px !important;
-  height: 32px !important;
+  width: 24px !important;
+  height: 24px !important;
   max-width: none !important;
-  flex-shrink: 0;
 }
 
 /* Mobile Layout Adjustments */
@@ -554,20 +553,13 @@ a:hover {
   }
 
   #main-nav {
-    display: none;
-  }
-
-  .nav-links {
-    display: none;
     position: absolute;
     top: 72px;
     left: 0;
     right: 0;
-    flex-direction: column;
+    display: none;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-subtle);
-    padding: var(--space-4) var(--space-6);
-    gap: var(--space-3);
     z-index: 999;
   }
 
@@ -575,8 +567,11 @@ a:hover {
     display: block;
   }
 
-  #main-nav.active .nav-links {
+  .nav-links {
     display: flex;
+    flex-direction: column;
+    padding: var(--space-4) var(--space-6);
+    gap: var(--space-3);
   }
 }
 
