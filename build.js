@@ -951,11 +951,6 @@ function navHTML() {
         </a>
       </div>
       
-      <div class="nav-actions">
-        <button class="search-toggle" aria-label="Open search" aria-expanded="false" aria-controls="search-bar">${ICONS.search}</button>
-        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">${ICONS.menu}</button>
-      </div>
-
       <nav id="main-nav">
         <ul class="nav-links" role="list">
           <li><a href="/ai-and-jobs/">AI & Jobs</a></li>
@@ -967,6 +962,11 @@ function navHTML() {
           <li><a href="/about/">About</a></li>
         </ul>
       </nav>
+
+      <div class="nav-actions">
+        <button class="search-toggle" aria-label="Open search" aria-expanded="false" aria-controls="search-bar">${ICONS.search}</button>
+        <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">${ICONS.menu}</button>
+      </div>
     </div>
 
     <!-- Expanded Search Bar -->

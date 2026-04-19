@@ -15,28 +15,28 @@ document.addEventListener('DOMContentLoaded', () => {
 /* --- Mobile Navigation --- */
 function initMobileNav() {
   const toggle = document.querySelector('.nav-toggle');
-  const links = document.querySelector('.nav-links');
-  if (!toggle || !links) return;
+  const nav = document.querySelector('#main-nav');
+  if (!toggle || !nav) return;
 
   toggle.addEventListener('click', () => {
     const expanded = toggle.getAttribute('aria-expanded') === 'true';
     toggle.setAttribute('aria-expanded', String(!expanded));
-    links.classList.toggle('active');
+    nav.classList.toggle('active');
   });
 
   // Close on click outside
   document.addEventListener('click', (e) => {
-    if (!toggle.contains(e.target) && !links.contains(e.target)) {
+    if (!toggle.contains(e.target) && !nav.contains(e.target)) {
       toggle.setAttribute('aria-expanded', 'false');
-      links.classList.remove('active');
+      nav.classList.remove('active');
     }
   });
 
   // Close on Escape
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && links.classList.contains('active')) {
+    if (e.key === 'Escape' && nav.classList.contains('active')) {
       toggle.setAttribute('aria-expanded', 'false');
-      links.classList.remove('active');
+      nav.classList.remove('active');
       toggle.focus();
     }
   });
