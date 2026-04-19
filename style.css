@@ -523,9 +523,12 @@ a:hover {
   line-height: 0;
 }
 
-.nav-toggle .site-icon {
-  width: 36px !important;
-  height: 36px !important;
+.nav-toggle svg {
+  display: block !important;
+  width: 32px !important;
+  height: 32px !important;
+  max-width: none !important;
+  flex-shrink: 0;
 }
 
 /* Mobile Layout Adjustments */
