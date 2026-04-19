@@ -518,9 +518,14 @@ a:hover {
   background: none;
   border: none;
   color: var(--text-primary);
-  font-size: var(--fs-xl);
   cursor: pointer;
   padding: var(--space-2);
+  line-height: 0;
+}
+
+.nav-toggle .site-icon {
+  width: 28px;
+  height: 28px;
 }
 
 /* Mobile Layout Adjustments */
